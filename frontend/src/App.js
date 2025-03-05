@@ -4,15 +4,15 @@ function App() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5000')  // ✅ Fixed URL
+    fetch('http://localhost:5000')
       .then((response) => response.text())
       .then((data) => setMessage(data))
-      .catch((error) => console.error('Error fetching message:', error)); // ✅ Added error handling
+      .catch((error) => console.error('Error fetching message:', error));
   }, []);
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>React Frontend</h1>
+      <h1>React Fronteeeeeeeeeeeeeeeeend</h1>
       <p>{message}</p>
     </div>
   );
