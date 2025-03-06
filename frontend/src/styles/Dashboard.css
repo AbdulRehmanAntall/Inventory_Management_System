@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: #eef2f7;
+    background-color: #1e272e;
 }
 
 .dashboard-container h1 {
@@ -18,8 +18,8 @@
 }
 
 .dashboard-container button {
-    background: #dc3545;
-    color: white;
+    background: #d2dae2;
+    color: #2B124C;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;

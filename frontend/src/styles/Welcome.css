@@ -1,0 +1,86 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+}
+
+.welcome_container {
+    display: flex;
+
+    min-height: 100vh;
+    background-color: #1e272e;
+    color: aquamarine;
+    overflow: auto;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.welcome_left_container {
+    flex: 0 0 30%;
+    background-color: #1e272e;
+    color: #d2dae2;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    overflow-y: auto;
+    flex-direction: column;
+}
+
+.welcome_right_container {
+    flex: 0 0 70%;
+    background-color: #d2dae2;
+    color: #1e272e;
+    text-align: center;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    overflow-y: auto;
+}
+
+.welcome_h1 {
+
+    font-size: 50px;
+}
+
+
+.welcome_h2 {
+
+    font-size: 40px;
+}
+
+
+.welcome_p {
+    text-align: left;
+    font-size: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    max-width: 80%;
+}
+
+
+.welbutton {
+    background-color: #1e272e;
+    border-radius: 2px;
+    color: #d2dae2;
+    width: 100px;
+    height: 25px;
+    margin-top: 100px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+/* Correct hover effect with glow */
+.welbutton:hover {
+    background-color: rgb(117, 22, 22);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgb(117, 22, 22), 0 0 20px rgb(255, 0, 0);
+}
