@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 
 function App() {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    fetch('http://localhost:5000')
-      .then((response) => response.text())
-      .then((data) => setMessage(data))
-      .catch((error) => console.error('Error fetching message:', error));
-  }, []);
-
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>React Fronteeeeeeeeeeeeeeeeend</h1>
-      <p>{message}</p>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
   );
 }
 
