@@ -6,7 +6,7 @@ function Dashboard() {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        navigate('/'); // Redirect back to login
+        navigate('/login'); // Redirect back to login
     };
 
     return (

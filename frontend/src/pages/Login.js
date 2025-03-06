@@ -9,7 +9,7 @@ function Login() {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        if (username === 'admin' && password === '123') {
+        if ((username === 'abdulrehmanantall' || username === 'kainatasghar') && password === '789645') {
             navigate('/dashboard'); // Redirect to dashboard
         } else {
             alert('Invalid Credentials');
