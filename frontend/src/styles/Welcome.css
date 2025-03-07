@@ -29,6 +29,14 @@ body {
     overflow: auto;
     overflow-y: auto;
     flex-direction: column;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.welcome_left_container:hover {
+    background-color: rgb(117, 22, 22);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgb(117, 22, 22), 0 0 20px rgb(255, 0, 0);
 }
 
 .welcome_right_container {
