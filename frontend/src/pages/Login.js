@@ -15,14 +15,16 @@ function Login() {
             alert('Invalid Credentials');
         }
     };
-
+    const handleCreateAccount = () => {
+        navigate('/newaccount');
+    };
     return (
         <div className="login-container">
             <h1>Login Page</h1>
             <form className="login-form" onSubmit={handleLogin}>
                 <input
                     type="text"
-                    placeholder="Username"
+                    placeholder="UserName"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
@@ -34,8 +36,13 @@ function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                 />
                 <br />
+
                 <button type="submit">Login</button>
+
+
+
             </form>
+            <button className="newAccountButton" onClick={handleCreateAccount} >Create NewAccount</button>
         </div>
     );
 }
