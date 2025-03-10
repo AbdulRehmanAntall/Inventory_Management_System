@@ -21,7 +21,7 @@ body {
 .welcome_left_container {
     flex: 0 0 30%;
     background-color: #1e272e;
-    color: #d2dae2;
+    color: white;
     text-align: center;
     display: flex;
     align-items: center;
@@ -41,7 +41,7 @@ body {
 
 .welcome_right_container {
     flex: 0 0 70%;
-    background-color: #d2dae2;
+    background-color: white;
     color: #1e272e;
     text-align: center;
     flex-direction: column;
@@ -76,7 +76,7 @@ body {
 .welbutton {
     background-color: #1e272e;
     border-radius: 2px;
-    color: #d2dae2;
+    color: white;
     width: 100px;
     height: 25px;
     margin-top: 100px;
