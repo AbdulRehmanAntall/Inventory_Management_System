@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { testConnection } = require('../controllers/userController');
+const userController = require('../controllers/userController');
 
-router.get('/test-db', testConnection);
+// Route to get all users
+router.get('/users', userController.getAllUsers); // This will now hit the getAllUsers function
 
 module.exports = router;
