@@ -1,9 +1,16 @@
 {
+  "name": "backend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
   "dependencies": {
     "concurrently": "^9.1.2",
     "dotenv": "^16.5.0",
     "mssql": "^11.0.1",
     "nodemon": "^3.1.9",
-    "web-vitals": "^4.2.4"
+    "express": "^4.18.1",
+    "cors": "^2.8.5",
+    "body-parser": "^1.19.0"
   }
 }
