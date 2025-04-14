@@ -1,7 +1,6 @@
 # Inventory Management System
 
 ## Overview
-
 The **Inventory Management System** is a robust application designed to help businesses manage their inventory efficiently. It allows users to track stock levels, manage products, and generate reports to optimize inventory operations.
 
 ## Features
