@@ -33,3 +33,38 @@ exports.getAllUsers = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+
+//Controller to authenticate user login
+exports.authenticateUser = async (req, res) => {
+    const { username, userpassword } = req.body;
+
+    console.log("🔐 Login attempt received:");
+    console.log("📥 Username:", username);
+    console.log("📥 Password:", userpassword);
+
+    try {
+        const pool = await poolPromise;
+        const request = pool.request();
+
+        request.input('username', sql.VarChar(50), username);
+        request.input('userpassword', sql.VarChar(255), userpassword);
+        request.output('success', sql.Int);
+
+        const result = await request.execute('authenticate_user_login');
+
+        const success = result.output.success; // <-- Correct way to get output
+
+        console.log("✅ Stored Procedure Output - Success:", success);
+
+        if (success === 1) {
+            res.status(200).json({ success: true, message: "Authentication successful" });
+        } else {
+            res.status(401).json({ success: false, message: "Invalid username or password" });
+        }
+
+    } catch (err) {
+        console.error("❌ Login error:", err);
+        res.status(500).json({ error: err.message });
+    }
+};
