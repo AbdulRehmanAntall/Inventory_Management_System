@@ -1,26 +1,23 @@
 const { sql, poolPromise } = require('../config/db');  // Destructure to get both sql and poolPromise
 
+
+//-------------------------------------USER FUNCTIONS------------------------
 // Function to fetch all users
 exports.getAllUsers = async (req, res) => {
     try {
-        // Wait for the pool to get a connection
         const pool = await poolPromise;
 
-        // Create the request object using the pool
         const request = pool.request();
 
-        // Execute the stored procedure to fetch all users
         const result = await request.execute('fetch_all_users');
 
-        // Log the result to check if everything is working
         console.log("Database Result:", result);
 
-        // Check if records were returned
         if (result.recordset && result.recordset.length > 0) {
-            console.log("Users Found:", result.recordset);  // Log all users found
+            console.log("Users Found:", result.recordset);
             res.status(200).json({
                 success: true,
-                users: result.recordset,  // Send list of users in the response
+                users: result.recordset,
             });
         } else {
             res.status(404).json({
@@ -34,14 +31,46 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
+//this function gets user Details BY Name
+exports.getUserDetailsByName = async (req, res) => {
+    const { username } = req.body;
+    console.log("🔍 Searching user:", username);
+
+    try {
+        const pool = await poolPromise;
+        const request = pool.request();
+
+        request.input('UserName', sql.VarChar(50), username);
+        request.output('Success', sql.Int);
+
+        const result = await request.execute('retrieve_user_details_name');
+        const Success = result.output.Success;
+
+        console.log("✅ Stored Procedure Output - Success:", Success);
+        console.log(" Retrieved User Details:", result.recordset);
+        if (Success === 1) {
+            res.status(200).json({
+                Success: true,
+                message: 'User found',
+                data: result.recordset
+            });
+        } else {
+            res.status(404).json({ Success: false, message: 'User not found' });
+        }
+
+    } catch (err) {
+        console.error("❌ Error in getUserDetailsByName:", err);
+        res.status(500).json({ Success: false, message: "Internal server error", error: err.message });
+    }
+};
 
 //Controller to authenticate user login
 exports.authenticateUser = async (req, res) => {
     const { username, userpassword } = req.body;
 
-    console.log("🔐 Login attempt received:");
-    console.log("📥 Username:", username);
-    console.log("📥 Password:", userpassword);
+    console.log("Login attempt received:");
+    console.log("Username:", username);
+    console.log("Password:", userpassword);
 
     try {
         const pool = await poolPromise;
@@ -75,7 +104,7 @@ exports.insertNewUser = async (req, res) => {
     const { userName, userPassword, userEmail, userRole } = req.body;
 
     // Log the received values for debugging
-    console.log("📥 Received Values:", { userName, userPassword, userEmail, userRole });
+    console.log("Received Values:", { userName, userPassword, userEmail, userRole });
 
     try {
         const pool = await poolPromise; // Use the same poolPromise as authenticateUser
