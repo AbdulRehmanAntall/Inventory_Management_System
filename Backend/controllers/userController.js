@@ -68,3 +68,39 @@ exports.authenticateUser = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+
+// Function to insert a new user
+exports.insertNewUser = async (req, res) => {
+    const { userName, userPassword, userEmail, userRole } = req.body;
+
+    // Log the received values for debugging
+    console.log("📥 Received Values:", { userName, userPassword, userEmail, userRole });
+
+    try {
+        const pool = await poolPromise; // Use the same poolPromise as authenticateUser
+        const request = pool.request();
+
+        request.input('userName', sql.VarChar(50), userName);
+        request.input('userPassword', sql.VarChar(255), userPassword);
+        request.input('UserEmail', sql.VarChar(100), userEmail);
+        request.input('UserRole', sql.VarChar(10), userRole);
+        request.output('success', sql.Int);
+
+        const result = await request.execute('Insert_New_user');
+
+        const success = result.output.success;
+
+        console.log("✅ Stored Procedure Output - Success:", success);
+
+        if (success === 1) {
+            res.status(201).json({ message: 'User inserted successfully' });
+        } else {
+            res.status(400).json({ message: 'Failed to insert user' });
+        }
+    } catch (error) {
+        console.error("❌ Error inserting user:", error);
+        res.status(500).json({ message: 'An error occurred', error: error.message });
+    }
+};
+
