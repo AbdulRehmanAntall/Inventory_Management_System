@@ -1,3 +1,4 @@
+const { request } = require('express');
 const { sql, poolPromise } = require('../config/db');  // Destructure to get both sql and poolPromise
 
 
@@ -129,6 +130,69 @@ exports.insertNewUser = async (req, res) => {
         }
     } catch (error) {
         console.error("❌ Error inserting user:", error);
+        res.status(500).json({ message: 'An error occurred', error: error.message });
+    }
+};
+
+//this function updates the userPassword of a user
+exports.updateUserPassword = async (req, res) => {
+
+    const { username, userpassword } = req.body;
+
+    console.log("Received Values  :", { username, userpassword });
+
+    try {
+        const pool = await poolPromise;
+        const request = pool.request();
+
+        request.input('username', sql.VarChar(50), username);
+        request.input('userPassword', sql.VarChar(255), userpassword);
+        request.output('success', sql.Int);
+
+        const result = await request.execute('update_user_password');
+        const success = result.output.success;
+
+        console.log("✅ Stored Procedure Output - Success:", success);
+
+        if (success === 1) {
+            res.status(201).json({ message: 'Password changed successfully' });
+        } else {
+            res.status(400).json({ message: 'Failed to change password' });
+        }
+    }
+    catch (error) {
+        console.error("❌ Failed to change password:", error);
+        res.status(500).json({ message: 'An error occurred', error: error.message });
+    }
+};
+
+//this function is used to delete a user
+exports.deleteUserAccount = async (req, res) => {
+
+    const { userid } = req.body;
+
+    console.log("Deleting User ID:", userid);
+
+    try {
+        const pool = await poolPromise;
+        const request = pool.request();
+
+        request.input('userid', sql.Int, userid);
+        request.output('success', sql.Int);
+
+        const result = await request.execute('delete_user_account_id');
+        const success = result.output.success;
+
+        console.log("✅ Stored Procedure Output - Success:", success);
+
+        if (success === 1) {
+            res.status(200).json({ message: 'User account deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'User not found or deletion failed' });
+        }
+    }
+    catch (error) {
+        console.error("❌ Failed to delete user:", error);
         res.status(500).json({ message: 'An error occurred', error: error.message });
     }
 };
