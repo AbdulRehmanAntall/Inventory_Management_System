@@ -1,4 +1,4 @@
-const { sql, poolPromise } = require('../config/db');  // Destructure to get both sql and poolPromise
+const { sql, poolPromise } = require('../config/db');
 
 //Function to insert new category
 exports.insertNewCategory = async (req, res) => {

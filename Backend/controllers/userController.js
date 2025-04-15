@@ -35,7 +35,7 @@ exports.getAllUsers = async (req, res) => {
 //this function gets user Details BY Name
 exports.getUserDetailsByName = async (req, res) => {
     const { username } = req.body;
-    console.log("🔍 Searching user:", username);
+    console.log(" Searching user:", username);
 
     try {
         const pool = await poolPromise;
