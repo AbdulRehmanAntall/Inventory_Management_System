@@ -29,3 +29,32 @@ exports.insertNewCategory = async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
     }
 };
+
+// Function to delete a category
+exports.deleteCategory = async (req, res) => {
+    const { categoryid } = req.body;
+
+    console.log("🗑️ Request to delete category:", categoryid);
+
+    try {
+        const pool = await poolPromise;
+        const request = pool.request();
+
+        request.input('categoryid', sql.Int, categoryid);
+        request.output('success', sql.Int);
+
+        const result = await request.execute('delete_category');
+        const success = result.output.success;
+
+        console.log("✅ Stored Procedure Output - Success:", success);
+
+        if (success === 1) {
+            res.status(200).json({ success: true, message: 'Category deleted successfully' });
+        } else {
+            res.status(400).json({ success: false, message: 'Category could not be deleted (does not exist or is linked to products)' });
+        }
+    } catch (error) {
+        console.error("❌ Error deleting category:", error);
+        res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+    }
+};

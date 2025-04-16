@@ -3,6 +3,7 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const categoryController = require('../controllers/categoryController');
 const supplierController = require('../controllers/supplierController');
+const customerController = require('../controllers/customerController');
 
 
 //user Routes
@@ -15,6 +16,7 @@ router.post('/Delete-User', userController.deleteUserAccount);
 
 //category routes
 router.post('/insert-category', categoryController.insertNewCategory);
+router.post('/delete-category', categoryController.deleteCategory);
 
 //supplierRoutes
 router.post('/insert-new-supplier', supplierController.insertNewSupplier);
@@ -24,7 +26,10 @@ router.post('/get-supplier-By-Name', supplierController.getSupplierByName);
 router.post('/delete-Supplier', supplierController.deleteSupplier);
 router.post('/get-supplier-By-Products', supplierController.getSuppliersByProduct);
 
-
-
+//customer Routes
+router.post('/insert-customer',customerController.insertCustomer);
+router.post('/delete-customer', customerController.deleteCustomer);
+router.get('/show-all-customers', customerController.showAllCustomers);
 
 module.exports = router;
+
