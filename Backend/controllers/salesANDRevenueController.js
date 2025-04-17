@@ -16,8 +16,9 @@ exports.insertNewSale = async (req, res) => {
         request.input('InvoiceTax', sql.Decimal(10, 2), InvoiceTax);
         request.output('SaleID', sql.Int);
 
-        await request.execute('Insert_New_Sale');
-        const SaleID = request.parameters.SaleID.value;
+        const result = await request.execute('Insert_New_Sale');
+        const SaleID = result.output.SaleID;
+        console.log(result);
 
         if (!SaleID) {
             return res.status(500).json({ message: 'Sale insertion failed.' });
@@ -29,6 +30,7 @@ exports.insertNewSale = async (req, res) => {
         res.status(500).json({ message: 'Error inserting sale', error: err.message });
     }
 };
+
 
 //this function is used to get sales history
 exports.getSalesHistory = async (req, res) => {
