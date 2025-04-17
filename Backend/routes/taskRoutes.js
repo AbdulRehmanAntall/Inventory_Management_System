@@ -9,6 +9,7 @@ const orderController = require('../controllers/orderController');
 const reorderANDexpiryController = require('../controllers/reorder&expiryController');
 const reportingController = require('../controllers/reportingController');
 const salesANDRevenueController = require('../controllers/salesANDRevenueController');
+const purchaseOrderController = require('../controllers/purchaseOrderController');
 
 //user Routes
 router.get('/users', userController.getAllUsers);
@@ -67,6 +68,11 @@ router.post('/sales-history', salesANDRevenueController.getSalesHistory);
 router.post('/total-revenue', salesANDRevenueController.getTotalRevenue);
 router.get('/best-selling-products', salesANDRevenueController.getBestSellingProducts);
 router.post('/total-tax', salesANDRevenueController.getTotalTaxCollected);
+
+//purchase order routes
+router.post('/get-purchase-orders', purchaseOrderController.getPurchaseOrders);
+router.post('/get-purchase-history', purchaseOrderController.getPurchaseHistoryForProduct);
+router.get('/get-best-supplier', purchaseOrderController.getBestSupplier);
 
 module.exports = router;
 
