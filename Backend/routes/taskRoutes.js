@@ -5,6 +5,7 @@ const categoryController = require('../controllers/categoryController');
 const supplierController = require('../controllers/supplierController');
 const customerController = require('../controllers/customerController');
 const productController = require('../controllers/productController');
+const orderController = require('../controllers/orderController');
 
 
 //user Routes
@@ -39,6 +40,12 @@ router.post('/get-product-by-id-name', productController.getProductbyIdorName);
 router.post('/update-product-price', productController.updateProductPrice);
 router.post('/delete-product', productController.deleteProduct);
 router.post('/get-products-by-category', productController.getProductsByCategory);
+
+//Order Routes
+router.post('/insert-order', orderController.insertNewOrder);
+router.post('/update-order-status', orderController.updateOrderStatus);
+router.post('/delete-order', orderController.deleteOrder);
+router.get('/show-all-orders', orderController.showAllOrders);
 
 module.exports = router;
 
