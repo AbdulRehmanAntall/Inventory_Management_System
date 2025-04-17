@@ -8,6 +8,7 @@ const productController = require('../controllers/productController');
 const orderController = require('../controllers/orderController');
 const reorderANDexpiryController = require('../controllers/reorder&expiryController');
 const reportingController = require('../controllers/reportingController');
+const salesANDRevenueController = require('../controllers/salesANDRevenueController');
 
 //user Routes
 router.get('/users', userController.getAllUsers);
@@ -58,6 +59,14 @@ router.get('/dashboard-summary', reportingController.getDashboardSummary);
 router.get('/frequently-sold-products', reportingController.getFrequentlySoldProducts);
 router.post('/sales-trends', reportingController.getSalesTrends);
 router.get('/supplier-performance', reportingController.getSupplierPerformance);
+
+
+//sales and revenue routes
+router.post('/insert-sale', salesANDRevenueController.insertNewSale);
+router.post('/sales-history', salesANDRevenueController.getSalesHistory);
+router.post('/total-revenue', salesANDRevenueController.getTotalRevenue);
+router.get('/best-selling-products', salesANDRevenueController.getBestSellingProducts);
+router.post('/total-tax', salesANDRevenueController.getTotalTaxCollected);
 
 module.exports = router;
 
