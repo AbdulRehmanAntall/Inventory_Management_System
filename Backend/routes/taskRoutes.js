@@ -7,7 +7,7 @@ const customerController = require('../controllers/customerController');
 const productController = require('../controllers/productController');
 const orderController = require('../controllers/orderController');
 const reorderANDexpiryController = require('../controllers/reorder&expiryController');
-
+const reportingController = require('../controllers/reportingController');
 
 //user Routes
 router.get('/users', userController.getAllUsers);
@@ -51,6 +51,13 @@ router.get('/show-all-orders', orderController.showAllOrders);
 //Reoder and Expiry Routes
 router.get('/reorder-products', reorderANDexpiryController.getReorderProducts);
 router.post('/get-expiring-products', reorderANDexpiryController.getExpiringProducts);
+
+
+//reporting Routes
+router.get('/dashboard-summary', reportingController.getDashboardSummary);
+router.get('/frequently-sold-products', reportingController.getFrequentlySoldProducts);
+router.post('/sales-trends', reportingController.getSalesTrends);
+router.get('/supplier-performance', reportingController.getSupplierPerformance);
 
 module.exports = router;
 
