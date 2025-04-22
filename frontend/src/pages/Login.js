@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../UserContext';  // Import the custom hook to access UserContext
 import '../styles/Login.css';
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false); // <-- Loading state
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { setUserName } = useUser();  // Get setUserName from useUser hook
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setLoading(true); // Start loading
+        setLoading(true);
 
         try {
             const response = await fetch('http://localhost:5000/api/login', {
@@ -25,6 +27,7 @@ function Login() {
 
             if (response.ok && data.success) {
                 console.log("✅ Authentication successful:", data);
+                setUserName(username);  // Set the username in context
                 navigate('/dashboard');
             } else {
                 console.warn("❌ Authentication failed:", data.message);
@@ -35,7 +38,7 @@ function Login() {
             alert('Something went wrong. Please try again later.');
         }
 
-        setLoading(false); // Stop loading
+        setLoading(false);
     };
 
     const handleCreateAccount = () => {
@@ -75,7 +78,6 @@ function Login() {
                 {loading ? 'Please wait...' : 'Create New Account'}
             </button>
 
-            {/* Optional loading message */}
             {loading && <p style={{ color: '#888' }}>🔄 Authenticating...</p>}
         </div>
     );
