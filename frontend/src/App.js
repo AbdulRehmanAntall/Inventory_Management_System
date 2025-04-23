@@ -7,6 +7,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Welcome from './pages/Welcome';
 import NewAccount from './pages/NewAccount'; // Fixed typo here too
+import Suppliers from './pages/suppliers';
+import Categories from './pages/categories';
 
 function App() {
   return (
@@ -18,6 +20,9 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/newaccount" element={<NewAccount />} />
           <Route path="/welcome" element={<Welcome />} />
+          <Route path="/suppliers" element={<Suppliers />} />
+          <Route path="/categories" element={<Categories />} />
+
         </Routes>
       </BrowserRouter>
     </UserProvider>

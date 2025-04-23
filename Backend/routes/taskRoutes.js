@@ -22,6 +22,7 @@ router.post('/Delete-User', userController.deleteUserAccount);
 //category routes
 router.post('/insert-category', categoryController.insertNewCategory);
 router.post('/delete-category', categoryController.deleteCategory);
+router.get('/categories', categoryController.retrieveAllCategories);
 
 //supplierRoutes
 router.post('/insert-new-supplier', supplierController.insertNewSupplier);

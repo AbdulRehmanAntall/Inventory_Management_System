@@ -1,0 +1,194 @@
+/* categories.css */
+.main-content {
+    padding: 30px;
+    flex: 1;
+    overflow-y: auto;
+    height: 100vh;
+    box-sizing: border-box;
+    background-color: #1C1E22;
+    color: #fff;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #f1f1f1;
+}
+
+/* Add Category Form */
+.add-category-form {
+    background: #2A2D32;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    margin-bottom: 30px;
+}
+
+.add-category-form h2 {
+    margin-bottom: 18px;
+    font-size: 22px;
+    color: #fff;
+    border-bottom: 1px solid #3c3f45;
+    padding-bottom: 10px;
+}
+
+.add-category-form form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.add-category-form input,
+.add-category-form textarea {
+    flex: 1 1 300px;
+    padding: 12px 14px;
+    border: 1px solid #3c3f45;
+    border-radius: 8px;
+    background-color: #202226;
+    color: #e0e0e0;
+}
+
+.add-category-form textarea {
+    height: 80px;
+    resize: none;
+}
+
+.add-category-form button {
+    background-color: #e53e3e;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-category-form button:hover {
+    background-color: #c53030;
+}
+
+/* Category Table */
+.category-table {
+    background: #2A2D32;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.category-table h2 {
+    margin-bottom: 18px;
+    font-size: 22px;
+    color: #fff;
+    border-bottom: 1px solid #3c3f45;
+    padding-bottom: 10px;
+}
+
+.category-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.category-table th,
+.category-table td {
+    padding: 14px 18px;
+    border: 1px solid #3c3f45;
+    text-align: center;
+    color: #f1f1f1;
+}
+
+.category-table th {
+    background-color: #1C1E22;
+    color: #ffffff;
+}
+
+.category-table button {
+    background-color: #e53e3e;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.category-table button:hover {
+    background-color: #c53030;
+}
+
+/* Notification */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 14px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    z-index: 999;
+    animation: fadeInOut 3s forwards;
+}
+
+.notification.success {
+    background-color: #38a169;
+}
+
+.notification.error {
+    background-color: #e53e3e;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #fff;
+    border-top: 3px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 8px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* Search Input */
+.search-input {
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    width: 100%;
+    border: 1px solid #3c3f45;
+    border-radius: 8px;
+    background-color: #202226;
+    color: #f1f1f1;
+    outline: none;
+    font-size: 16px;
+}
+
+.search-input::placeholder {
+    color: #888;
+}

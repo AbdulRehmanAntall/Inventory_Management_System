@@ -58,3 +58,37 @@ exports.deleteCategory = async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
     }
 };
+
+// Function to retrieve all categories, with optional filtering
+exports.retrieveAllCategories = async (req, res) => {
+    const { name } = req.query;  // Get the category name from query params (optional)
+
+    console.log("📄 Fetching categories with filter:", name || 'No filter');
+
+    try {
+        const pool = await poolPromise;
+        const request = pool.request();
+
+        // If a name is provided, filter by it
+        if (name) {
+            request.input('name', sql.NVarChar, name);
+            const result = await request.execute('retrieve_categories_by_name');
+            const categories = result.recordset;
+
+            console.log("✅ Categories fetched with name filter:", categories.length);
+
+            res.status(200).json({ success: true, data: categories });
+        } else {
+            // If no name filter, retrieve all categories
+            const result = await request.execute('retrieve_all_categories');
+            const categories = result.recordset;
+
+            console.log("✅ All categories fetched:", categories.length);
+
+            res.status(200).json({ success: true, data: categories });
+        }
+    } catch (error) {
+        console.error("❌ Error fetching categories:", error);
+        res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+    }
+};
