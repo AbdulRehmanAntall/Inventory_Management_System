@@ -9,7 +9,9 @@ import Welcome from './pages/Welcome';
 import NewAccount from './pages/NewAccount'; // Fixed typo here too
 import Suppliers from './pages/suppliers';
 import Categories from './pages/categories';
-
+import Users from './pages/users';
+import Products from './pages/products';
+import Orders from './pages/orders';
 function App() {
   return (
     <UserProvider>
@@ -22,6 +24,12 @@ function App() {
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/suppliers" element={<Suppliers />} />
           <Route path="/categories" element={<Categories />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/orders" element={<Orders />} />
+
+
+
 
         </Routes>
       </BrowserRouter>

@@ -12,9 +12,9 @@ const salesANDRevenueController = require('../controllers/salesANDRevenueControl
 const purchaseOrderController = require('../controllers/purchaseOrderController');
 
 //user Routes
-router.get('/users', userController.getAllUsers);
 router.post('/login', userController.authenticateUser);
 router.post('/insert-user', userController.insertNewUser);
+router.get('/users', userController.getAllUsers);
 router.post('/getUserDetailsByName', userController.getUserDetailsByName);
 router.post('/Update-User-Password', userController.updateUserPassword);
 router.post('/Delete-User', userController.deleteUserAccount);

@@ -77,6 +77,8 @@ function Dashboard() {
                         <hr className="menu-separator" />
                         <li onClick={() => handleNavigation('/suppliers')}>Vendors</li>
                         <hr className="menu-separator" />
+                        <li onClick={() => handleNavigation('/orders')}>Orders</li>
+                        <hr className="menu-separator" />
                         <li onClick={() => handleNavigation('/products')}>Products</li>
                         <hr className="menu-separator" />
                         <li onClick={() => handleNavigation('/sales')}>Sales</li>
@@ -93,19 +95,20 @@ function Dashboard() {
                     </ul>
                 </div>
                 <div className="logout-section">
-                    <button className="logout-btn" onClick={handleLogout}>
-                        Logout
-                    </button>
+                    <button className="logout-btn" onClick={handleLogout}>Logout</button>
                 </div>
             </div>
 
             <div className="main-content">
-                <h1>Welcome, {userName}</h1>
+                <h1 className="page-title">Welcome, {userName}</h1>
 
                 {loading ? (
-                    <div className="loading-spinner">Loading your account details...</div>
+                    <div className="loading-wrapper">
+                        <div className="loading-spinner"></div>
+                        <div>Loading your account details...</div>
+                    </div>
                 ) : error ? (
-                    <div className="error-message" style={{ color: 'red' }}>{error}</div>
+                    <div className="error-message">{error}</div>
                 ) : userDetails ? (
                     <div className="user-details-container">
                         <div className="user-details-card">

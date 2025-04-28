@@ -99,7 +99,8 @@ const Category = () => {
                         <li onClick={() => handleNavigation('/categories')}>Categories</li>
                         <hr className="menu-separator" />
                         <li onClick={() => handleNavigation('/suppliers')}>Vendors</li>
-
+                        <hr className="menu-separator" />
+                        <li onClick={() => handleNavigation('/orders')}>Orders</li>
                         <hr className="menu-separator" />
                         <li onClick={() => handleNavigation('/products')}>Products</li>
                         <hr className="menu-separator" />
