@@ -1,104 +1,142 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Dashboard.css';
 import '../styles/products.css';
 
 const Products = () => {
-    const navigate = useNavigate();
-    const [suppliers, setSuppliers] = useState([]);
+    const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [productName, setProductName] = useState('');
-    const [productDescription, setProductDescription] = useState('');
-    const [productCategory, setProductCategory] = useState('');  // This will store the selected category ID
-    const [productSupplier, setProductSupplier] = useState('');
-    const [productPrice, setProductPrice] = useState('');
-    const [productStockQuantity, setProductStockQuantity] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [newProduct, setNewProduct] = useState({
+        ProductName: '',
+        ProductDescription: '',
+        ProductCategoryID: '',
+        ProductPrice: '',
+        ProductStockQuantity: '',
+        ProductReorderThreshold: 5,
+        ProductExpiryDate: ''
+    });
+    const [editingPrice, setEditingPrice] = useState({});
     const [notification, setNotification] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
 
-    const handleNavigation = (route) => navigate(route);
-
-    useEffect(() => {
-        fetchCategories(); // Fetch categories when the component mounts
-        fetchSuppliers(); // Fetch suppliers when the component mounts
-    }, []);
-
-    const fetchSuppliers = async () => {
-        try {
-            const res = await axios.get('http://localhost:5000/api/get-all-supplier');
-            setSuppliers(res.data);
-        } catch (error) {
-            console.error('Error fetching suppliers:', error);
-            setErrorMessage('Failed to fetch suppliers.');
-        }
-    };
-
-    const fetchCategories = async () => {
-        setLoading(true);
-        try {
-            const res = await axios.get('http://localhost:5000/api/categories');
-            if (res.data && res.data.data) {
-                setCategories(res.data.data);  // Set categories to the fetched data
-            } else {
-                setCategories([]);
-            }
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-            setCategories([]);
-            setErrorMessage('Failed to fetch categories.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const showNotification = (message, type) => {
-        setNotification({ message, type });
-        setTimeout(() => {
-            setNotification(null);
-        }, 3000);
-    };
-
-    const handleAddProduct = async (e) => {
-        e.preventDefault();
-        const productData = {
-            ProductName: productName,
-            ProductDescription: productDescription,
-            ProductCategoryID: productCategory,  // Pass selected category ID
-            ProductSupplierID: productSupplier,
-            ProductPrice: parseFloat(productPrice),
-            ProductStockQuantity: parseInt(productStockQuantity),
-        };
-
-        try {
-            setLoading(true);
-            const res = await axios.post('http://localhost:5000/api/insert-product', productData);
-            if (res.data.success) {
-                showNotification('Product added successfully!', 'success');
-                // Reset form fields
-                setProductName('');
-                setProductDescription('');
-                setProductCategory('');
-                setProductSupplier('');
-                setProductPrice('');
-                setProductStockQuantity('');
-            } else {
-                setErrorMessage('Failed to add product.');
-                showNotification('Failed to add product!', 'error');
-            }
-        } catch (error) {
-            console.error('Error adding product:', error);
-            setErrorMessage('Internal server error.');
-            showNotification('Internal server error.', 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    const navigate = useNavigate();
+   
+    const handleNavigation = (path) => navigate(path);
     const handleLogout = () => {
         // Add logout functionality if needed
         navigate('/login');
+    };
+
+    // Fetch products and categories
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const [productsRes, categoriesRes] = await Promise.all([
+                    axios.get('http://localhost:5000/api/get-all-products'),
+                    axios.get('http://localhost:5000/api/categories')
+                ]);
+                const productsData = productsRes.data?.products || [];
+                const categoriesData = categoriesRes.data?.data || [];
+                setProducts(productsData);
+                setCategories(categoriesData);
+                setFilteredProducts(productsData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showNotification('Failed to load data.', 'error');
+            }
+        };
+
+        fetchProducts();
+    }, []);  // Empty dependency array ensures this runs only once
+
+    // Notification display
+    const showNotification = (message, type) => {
+        setNotification({ message, type });
+        setTimeout(() => setNotification(null), 3000);
+    };
+
+    // Handle form input changes
+    const handleChange = (e) => {
+        setNewProduct({ ...newProduct, [e.target.name]: e.target.value });
+    };
+
+    // Add new product
+    const handleAddProduct = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await axios.post('http://localhost:5000/api/insert-product', newProduct);
+            const addedProduct = res.data?.product;
+            if (addedProduct) {
+                const updatedProducts = [...products, addedProduct];
+                setProducts(updatedProducts);
+                setFilteredProducts(updatedProducts);
+                setNewProduct({
+                    ProductName: '',
+                    ProductDescription: '',
+                    ProductCategoryID: '',
+                    ProductPrice: '',
+                    ProductStockQuantity: '',
+                    ProductReorderThreshold: 5,
+                    ProductExpiryDate: ''
+                });
+                showNotification('Product added successfully!', 'success');
+            }
+        } catch (error) {
+            console.error('Error adding product:', error);
+            showNotification('Failed to add product.', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Search filtering
+    const handleSearchChange = (e) => {
+        const term = e.target.value;
+        setSearchTerm(term);
+        const filtered = products.filter(p =>
+            p.ProductName?.toLowerCase().includes(term.toLowerCase())
+        );
+        setFilteredProducts(filtered);
+    };
+
+    // Update product price
+    const handlePriceChange = (ProductID, value) => {
+        setEditingPrice(prev => ({ ...prev, [ProductID]: value }));
+    };
+
+    const updateProductPrice = async (ProductID) => {
+        const newPrice = editingPrice[ProductID];
+        if (!newPrice) return;
+        try {
+            await axios.post('http://localhost:5000/api/update-product-price', { ProductID, ProductPrice: newPrice });
+            const updatedProducts = products.map(p =>
+                p.ProductID === ProductID ? { ...p, ProductPrice: newPrice } : p
+            );
+            setProducts(updatedProducts);
+            setFilteredProducts(updatedProducts);
+            showNotification('Product price updated successfully!', 'success');
+        } catch (error) {
+            console.error('Error updating price:', error);
+            showNotification('Failed to update price.', 'error');
+        }
+    };
+
+    // Delete product
+    const deleteProduct = async (ProductID) => {
+        try {
+            await axios.post('http://localhost:5000/api/delete-product', { ProductID });
+            const updatedProducts = products.filter(p => p.ProductID !== ProductID);
+            setProducts(updatedProducts);
+            setFilteredProducts(updatedProducts);
+            showNotification('Product deleted successfully!', 'success');
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            showNotification('Failed to delete product.', 'error');
+        }
     };
 
     return (
@@ -136,7 +174,7 @@ const Products = () => {
             </div>
 
             <div className="main-content">
-                <h1 className="page-title">Add New Product</h1>
+                <h1>Product Management</h1>
 
                 {notification && (
                     <div className={`notification ${notification.type}`}>
@@ -144,83 +182,79 @@ const Products = () => {
                     </div>
                 )}
 
+                {/* Add Product Form */}
                 <form className="add-product-form" onSubmit={handleAddProduct}>
-                    <div className="form-group">
-                        <label>Product Name</label>
-                        <input
-                            type="text"
-                            value={productName}
-                            onChange={(e) => setProductName(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Description</label>
-                        <textarea
-                            value={productDescription}
-                            onChange={(e) => setProductDescription(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Category</label>
-                        <select
-                            value={productCategory}
-                            onChange={(e) => setProductCategory(e.target.value)}
-                            required
-                        >
-                            <option value="">Select a category</option>
-                            {categories.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Supplier</label>
-                        <select
-                            value={productSupplier}
-                            onChange={(e) => setProductSupplier(e.target.value)}
-                            required
-                        >
-                            <option value="">Select a supplier</option>
-                            {suppliers.map((supplier) => (
-                                <option key={supplier.id} value={supplier.id}>
-                                    {supplier.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Price</label>
-                        <input
-                            type="number"
-                            value={productPrice}
-                            onChange={(e) => setProductPrice(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Stock Quantity</label>
-                        <input
-                            type="number"
-                            value={productStockQuantity}
-                            onChange={(e) => setProductStockQuantity(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Adding Product...' : 'Add Product'}
-                    </button>
+                    <h2>Add New Product</h2>
+                    <input type="text" name="ProductName" placeholder="Product Name" value={newProduct.ProductName} onChange={handleChange} required />
+                    <input type="text" name="ProductDescription" placeholder="Description" value={newProduct.ProductDescription} onChange={handleChange} required />
+                    <select name="ProductCategoryID" value={newProduct.ProductCategoryID} onChange={handleChange} required>
+                        <option value="">Select Category</option>
+                        {categories.map(c => (
+                            <option key={c.categoryid} value={c.categoryid}>{c.categoryname}</option>
+                        ))}
+                    </select>
+                    <input type="number" name="ProductPrice" placeholder="Price" value={newProduct.ProductPrice} onChange={handleChange} required min="0" step="0.01" />
+                    <input type="number" name="ProductStockQuantity" placeholder="Stock Quantity" value={newProduct.ProductStockQuantity} onChange={handleChange} required min="0" />
+                    <input type="number" name="ProductReorderThreshold" placeholder="Reorder Threshold" value={newProduct.ProductReorderThreshold} onChange={handleChange} min="0" />
+                    <input type="date" name="ProductExpiryDate" value={newProduct.ProductExpiryDate} onChange={handleChange} />
+                    <button type="submit" disabled={loading}>{loading ? <span className="loading-spinner"></span> : 'Add Product'}</button>
                 </form>
-                {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+                {/* Search */}
+                <div className="search-input">
+                    <input type="text" placeholder="Search Products" value={searchTerm} onChange={handleSearchChange} />
+                </div>
+
+                {/* Product Table */}
+                <div className="product-table">
+                    <h2>Products List</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Price ($)</th>
+                                <th>Stock</th>
+                                <th>Reorder</th>
+                                <th>Expiry</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredProducts.length > 0 ? (
+                                filteredProducts.map(p => (
+                                    p.ProductID ? (  // Check if ProductID exists before rendering
+                                        <tr key={p.ProductID}>
+                                            <td>{p.ProductID}</td>
+                                            <td>{p.ProductName}</td>
+                                            <td>{p.ProductDescription}</td>
+                                            <td>{p.ProductCategoryID}</td>
+                                            <td>
+                                                <input
+                                                    type="number"
+                                                    value={editingPrice[p.ProductID] !== undefined ? editingPrice[p.ProductID] : p.ProductPrice}
+                                                    onChange={(e) => handlePriceChange(p.ProductID, e.target.value)}
+                                                    style={{ width: '70px' }}
+                                                />
+                                            </td>
+                                            <td>{p.ProductStockQuantity}</td>
+                                            <td>{p.ProductReorderThreshold}</td>
+                                            <td>{p.ProductExpiryDate ? new Date(p.ProductExpiryDate).toLocaleDateString() : 'N/A'}</td>
+                                            <td>
+                                                <button onClick={() => updateProductPrice(p.ProductID)}>Update</button>
+                                                <button onClick={() => deleteProduct(p.ProductID)}>Delete</button>
+                                            </td>
+                                        </tr>
+                                    ) : null
+                                ))
+                            ) : (
+                                <tr><td colSpan="9" style={{ textAlign: 'center' }}>No Products Found</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );
