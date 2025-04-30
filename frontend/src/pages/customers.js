@@ -3,18 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useUser } from '../UserContext';
 import '../styles/Dashboard.css';
-import '../styles/suppliers.css';
+import '../styles/customers.css';
 
-const Suppliers = () => {
-    const [suppliers, setSuppliers] = useState([]);
-    const [filteredSuppliers, setFilteredSuppliers] = useState([]);
+const Customers = () => {
+    const [customers, setCustomers] = useState([]);
+    const [filteredCustomers, setFilteredCustomers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [newSupplier, setNewSupplier] = useState({
-        SupplierName: '',
-        SupplierContactPerson: '',
-        SupplierEmail: '',
-        SupplierPhoneNumber: '',
-        SupplierAddress: '',
+    const [newCustomer, setNewCustomer] = useState({
+        CustomerName: '',
+        CustomerEmail: '',
+        CustomerPhoneNumber: '',
+        CustomerAddress: '',
     });
     const [notification, setNotification] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -28,22 +27,22 @@ const Suppliers = () => {
         navigate('/');
     };
 
-    const fetchSuppliers = async () => {
+    const fetchCustomers = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/get-all-supplier');
-            setSuppliers(res.data);
-            setFilteredSuppliers(res.data);
+            const res = await axios.get('http://localhost:5000/api/show-all-customers');
+            setCustomers(res.data.customers);
+            setFilteredCustomers(res.data.customers);
         } catch (error) {
-            console.error('Error fetching suppliers:', error);
+            console.error('Error fetching customers:', error);
         }
     };
 
     useEffect(() => {
-        fetchSuppliers();
+        fetchCustomers();
     }, []);
 
     const handleChange = (e) => {
-        setNewSupplier({ ...newSupplier, [e.target.name]: e.target.value });
+        setNewCustomer({ ...newCustomer, [e.target.name]: e.target.value });
     };
 
     const showNotification = (message, type) => {
@@ -53,23 +52,22 @@ const Suppliers = () => {
         }, 3000);
     };
 
-    const handleAddSupplier = async (e) => {
+    const handleAddCustomer = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post('http://localhost:5000/api/insert-new-supplier', newSupplier);
-            fetchSuppliers();
-            setNewSupplier({
-                SupplierName: '',
-                SupplierContactPerson: '',
-                SupplierEmail: '',
-                SupplierPhoneNumber: '',
-                SupplierAddress: '',
+            await axios.post('http://localhost:5000/api/insert-customer', newCustomer);
+            fetchCustomers();
+            setNewCustomer({
+                CustomerName: '',
+                CustomerEmail: '',
+                CustomerPhoneNumber: '',
+                CustomerAddress: '',
             });
-            showNotification('Vendor added successfully!', 'success');
+            showNotification('Customer added successfully!', 'success');
         } catch (error) {
-            console.error('Error adding supplier:', error);
-            showNotification('Failed to add vendor!', 'error');
+            console.error('Error adding customer:', error);
+            showNotification('Failed to add customer!', 'error');
         } finally {
             setLoading(false);
         }
@@ -77,22 +75,22 @@ const Suppliers = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.post('http://localhost:5000/api/delete-Supplier', { SupplierID: id });
-            fetchSuppliers();
-            showNotification('Vendor deleted successfully!', 'success');
+            await axios.post('http://localhost:5000/api/delete-customer', { CustomerID: id });
+            fetchCustomers();
+            showNotification('Customer deleted successfully!', 'success');
         } catch (error) {
-            console.error('Error deleting supplier:', error);
-            showNotification('Failed to delete vendor!', 'error');
+            console.error('Error deleting customer:', error);
+            showNotification('Failed to delete customer!', 'error');
         }
     };
 
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
-        const filtered = suppliers.filter((supplier) =>
-            supplier.SupplierName.toLowerCase().includes(value.toLowerCase())
+        const filtered = customers.filter((customer) =>
+            customer.CustomerName.toLowerCase().includes(value.toLowerCase())
         );
-        setFilteredSuppliers(filtered);
+        setFilteredCustomers(filtered);
     };
 
     return (
@@ -132,24 +130,23 @@ const Suppliers = () => {
             </div>
 
             <div className="main-content">
-                <h1 className="page-title">Vendors Management</h1>
+                <h1 className="page-title">Customers Management</h1>
 
-                <div className="add-supplier-form">
-                    <h2>Add New Vendor</h2>
-                    <form onSubmit={handleAddSupplier}>
-                        <input type="text" name="SupplierName" placeholder="Name" value={newSupplier.SupplierName} onChange={handleChange} required />
-                        <input type="text" name="SupplierContactPerson" placeholder="Contact Person" value={newSupplier.SupplierContactPerson} onChange={handleChange} required />
-                        <input type="email" name="SupplierEmail" placeholder="Email" value={newSupplier.SupplierEmail} onChange={handleChange} required />
-                        <input type="text" name="SupplierPhoneNumber" placeholder="Phone Number" value={newSupplier.SupplierPhoneNumber} onChange={handleChange} required />
-                        <textarea name="SupplierAddress" placeholder="Address" value={newSupplier.SupplierAddress} onChange={handleChange} required />
+                <div className="add-customer-form">
+                    <h2>Add New Customer</h2>
+                    <form onSubmit={handleAddCustomer}>
+                        <input type="text" name="CustomerName" placeholder="Name" value={newCustomer.CustomerName} onChange={handleChange} required />
+                        <input type="email" name="CustomerEmail" placeholder="Email" value={newCustomer.CustomerEmail} onChange={handleChange} required />
+                        <input type="text" name="CustomerPhoneNumber" placeholder="Phone Number" value={newCustomer.CustomerPhoneNumber} onChange={handleChange} required />
+                        <textarea name="CustomerAddress" placeholder="Address" value={newCustomer.CustomerAddress} onChange={handleChange} required />
                         <button type="submit">
-                            {loading ? <span className="loading-spinner"></span> : 'Add Vendor'}
+                            {loading ? <span className="loading-spinner"></span> : 'Add Customer'}
                         </button>
                     </form>
                 </div>
 
-                <div className="supplier-table">
-                    <h2>Vendors List</h2>
+                <div className="customer-table">
+                    <h2>Customers List</h2>
 
                     <input
                         type="text"
@@ -164,32 +161,28 @@ const Suppliers = () => {
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
-                                <th>Contact Person</th>
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Address</th>
-                                <th>Performance Rating</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredSuppliers.map((supplier) => (
-                                <tr key={supplier.SupplierID}>
-                                    <td>{supplier.SupplierID}</td>
-                                    <td>{supplier.SupplierName}</td>
-                                    <td>{supplier.SupplierContactPerson}</td>
-                                    <td>{supplier.SupplierEmail}</td>
-                                    <td>{supplier.SupplierPhoneNumber}</td>
-                                    <td>{supplier.SupplierAddress}</td>
-                                    <td>{supplier.SupplierPerformanceRating}</td>
+                            {filteredCustomers.map((customer) => (
+                                <tr key={customer.CustomerID}>
+                                    <td>{customer.CustomerID}</td>
+                                    <td>{customer.CustomerName}</td>
+                                    <td>{customer.CustomerEmail}</td>
+                                    <td>{customer.CustomerPhoneNumber}</td>
+                                    <td>{customer.CustomerAddress}</td>
                                     <td>
-                                        <button onClick={() => handleDelete(supplier.SupplierID)}>Delete</button>
+                                        <button onClick={() => handleDelete(customer.CustomerID)}>Delete</button>
                                     </td>
                                 </tr>
                             ))}
-                            {filteredSuppliers.length === 0 && (
+                            {filteredCustomers.length === 0 && (
                                 <tr>
-                                    <td colSpan="8" style={{ textAlign: 'center' }}>No Vendors Found</td>
+                                    <td colSpan="6" style={{ textAlign: 'center' }}>No Customers Found</td>
                                 </tr>
                             )}
                         </tbody>
@@ -206,4 +199,4 @@ const Suppliers = () => {
     );
 };
 
-export default Suppliers;
+export default Customers;
