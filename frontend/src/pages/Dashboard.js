@@ -13,7 +13,9 @@ function Dashboard() {
     const handleNavigation = (path) => {
         navigate(path);
     };
-
+    const handleLogout = () => {
+        navigate('/login');
+    };
     useEffect(() => {
         const fetchUserDetails = async () => {
             if (!userName) {
@@ -61,9 +63,6 @@ function Dashboard() {
         fetchUserDetails();
     }, [userName]);
 
-    const handleLogout = () => {
-        navigate('/login');
-    };
 
     return (
         <div className="dashboard-container">
@@ -78,7 +77,7 @@ function Dashboard() {
                         <li onClick={() => handleNavigation('/suppliers')}>Vendors</li>
                         <hr className="menu-separator" />
                         <li onClick={() => handleNavigation('/customers')}>Customers</li>
-                        <hr className="menu-separator" />                     
+                        <hr className="menu-separator" />
                         <li onClick={() => handleNavigation('/orders')}>Orders</li>
                         <hr className="menu-separator" />
                         <li onClick={() => handleNavigation('/products')}>Products</li>

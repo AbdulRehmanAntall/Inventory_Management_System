@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useUser } from '../UserContext';
 import '../styles/Dashboard.css';
 import '../styles/users.css';
 
@@ -19,13 +18,15 @@ const Users = () => {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
-    const { logout } = useUser();
+
+
 
     const handleNavigation = (path) => navigate(path);
     const handleLogout = () => {
-        logout();
-        navigate('/');
+        // Add logout functionality if needed
+        navigate('/login');
     };
+
 
     const fetchUsers = async () => {
         try {

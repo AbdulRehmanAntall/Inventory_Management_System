@@ -20,7 +20,11 @@ const Sales = () => {
     const navigate = useNavigate();
 
     const handleNavigation = (path) => navigate(path);
-    const handleLogout = () => navigate('/login');
+    const handleLogout = () => {
+        // Add logout functionality if needed
+        navigate('/login');
+    };
+
 
     useEffect(() => {
         axios.get('http://localhost:5000/api/show-all-customers')

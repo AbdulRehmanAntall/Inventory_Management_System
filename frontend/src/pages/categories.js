@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../UserContext';
 import '../styles/Dashboard.css';
 import '../styles/categories.css';
 
@@ -13,8 +12,6 @@ const Category = () => {
     const [loading, setLoading] = useState(true);  // Set initial loading state to true
 
     const navigate = useNavigate();
-    const { logout } = useUser();
-
     // Function to fetch categories from the API
     const fetchCategories = async () => {
         setLoading(true);  // Set loading to true when data is being fetched
@@ -84,8 +81,8 @@ const Category = () => {
     // Handle navigation between pages
     const handleNavigation = (path) => navigate(path);
     const handleLogout = () => {
-        logout();  // Logout user
-        navigate('/');  // Redirect to home page
+        // Logout user
+        navigate('/login');  // Redirect to home page
     };
 
     return (
