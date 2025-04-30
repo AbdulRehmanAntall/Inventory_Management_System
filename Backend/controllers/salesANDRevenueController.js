@@ -2,23 +2,30 @@ const { request } = require('express');
 const { sql, poolPromise } = require('../config/db');  // Destructure to get both sql and poolPromise
 
 
-//this function is used to enter a new sale
 exports.insertNewSale = async (req, res) => {
-    const { SaleUserID, CustomerID, InvoiceTotalAmount, InvoiceTax = 0.00 } = req.body;
+    const { SaleUserID, CustomerID, InvoiceTotalAmount, InvoiceTax = 0.00, SaleItems } = req.body;
 
     try {
         const pool = await poolPromise;
-        const request = pool.request();
+        const table = new sql.Table('SaleItemType');
+        table.columns.add('ProductID', sql.Int);
+        table.columns.add('Quantity', sql.Int);
+        table.columns.add('PricePerUnit', sql.Decimal(10, 2));
 
+        SaleItems.forEach(item => {
+            table.rows.add(item.ProductID, item.Quantity, item.PricePerUnit);
+        });
+
+        const request = pool.request();
         request.input('SaleUserID', sql.Int, SaleUserID);
         request.input('CustomerID', sql.Int, CustomerID);
         request.input('InvoiceTotalAmount', sql.Decimal(10, 2), InvoiceTotalAmount);
         request.input('InvoiceTax', sql.Decimal(10, 2), InvoiceTax);
+        request.input('SaleItems', table);
         request.output('SaleID', sql.Int);
 
         const result = await request.execute('Insert_New_Sale');
         const SaleID = result.output.SaleID;
-        console.log(result);
 
         if (!SaleID) {
             return res.status(500).json({ message: 'Sale insertion failed.' });
@@ -30,6 +37,7 @@ exports.insertNewSale = async (req, res) => {
         res.status(500).json({ message: 'Error inserting sale', error: err.message });
     }
 };
+
 
 
 //this function is used to get sales history
