@@ -1,5 +1,4 @@
 const { request } = require('express');
-
 const { sql, poolPromise } = require('../config/db');
 
 // FUNCTION TOT GET Total Stock, Sales & Revenue
