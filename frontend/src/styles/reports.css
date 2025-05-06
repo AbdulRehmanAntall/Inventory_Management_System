@@ -8,7 +8,9 @@
     color: #f1f1f1;
 }
 
-.page-title, h1, h2 {
+.page-title,
+h1,
+h2 {
     color: #f1f1f1;
     font-weight: 600;
     margin-bottom: 20px;
@@ -92,6 +94,41 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+/* Styling for Select Dropdown */
+.report-section select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background-color: #2A2D32;
+    color: #f1f1f1;
+    font-size: 16px;
+    margin-right: 10px;
+    width: 150px;
+}
+
+/* Styling for Button */
+.report-section button {
+    padding: 8px 20px;
+    border-radius: 8px;
+    background-color: #28a745;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.report-section button:hover {
+    background-color: #218838;
 }
