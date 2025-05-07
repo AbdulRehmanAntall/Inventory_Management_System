@@ -16,6 +16,7 @@ const Sales = () => {
         FinalAmount: 0
     });
     const [notification, setNotification] = useState(null);
+    const [allSales, setAllSales] = useState([]);
 
     const navigate = useNavigate();
 
@@ -25,12 +26,15 @@ const Sales = () => {
         navigate('/login');
     };
 
-
     useEffect(() => {
         axios.get('http://localhost:5000/api/show-all-customers')
             .then(res => setCustomers(res.data.customers));
         axios.get('http://localhost:5000/api/get-all-products')
             .then(res => setProducts(res.data.products));
+        
+        // Fetch all sales
+        axios.get('http://localhost:5000/api/all-sales')
+            .then(res => setAllSales(res.data.sales));
     }, []);
 
     const addItem = () => {
@@ -100,6 +104,9 @@ const Sales = () => {
                 setNotification('Sale Recorded Successfully!');
                 setSaleItems([]);
                 setNewSale({ SaleUserID: 1, CustomerID: '', InvoiceTax: 0, InvoiceTotalAmount: 0, FinalAmount: 0 });
+                // Fetch all sales after recording a new sale
+                axios.get('http://localhost:5000/api/all-sales')
+                    .then(res => setAllSales(res.data.sales));
             })
             .catch(() => setNotification('Error Recording Sale.'));
     };
@@ -219,12 +226,37 @@ const Sales = () => {
                             <button type="button" onClick={addItem}>Add Product</button>
                         </div>
 
-                        <div className="total-display">Subtotal: {newSale.InvoiceTotalAmount}</div>
-                        <div className="total-display">Final Amount (incl. Tax): {newSale.FinalAmount}</div>
+                        <div className="totals">
+                            <p>Total: {newSale.InvoiceTotalAmount}</p>
+                            <p>Final Amount: {newSale.FinalAmount}</p>
+                        </div>
 
-                        <button type="submit">Record Sale</button>
+                        <button type="submit" className="submit-btn">Submit Sale</button>
                     </form>
                 </div>
+
+                <h2>All Sales</h2>
+                <table className="sales-table">
+                    <thead>
+                        <tr>
+                            <th>Sale ID</th>
+                            <th>Customer</th>
+                            <th>Tax</th>
+                            <th>Total Amount</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {allSales.map(sale => (
+                            <tr key={sale.SaleID}>
+                                <td>{sale.SaleID}</td>
+                                <td>{sale.CustomerName}</td>
+                                <td>{sale.InvoiceTax}%</td>
+                                <td>{sale.InvoiceTotalAmount}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

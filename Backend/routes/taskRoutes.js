@@ -69,6 +69,7 @@ router.post('/sales-history', salesANDRevenueController.getSalesHistory);
 router.post('/total-revenue', salesANDRevenueController.getTotalRevenue);
 router.get('/best-selling-products', salesANDRevenueController.getBestSellingProducts);
 router.post('/total-tax', salesANDRevenueController.getTotalTaxCollected);
+router.get('/all-sales', salesANDRevenueController.showAllSales);
 
 //purchase order routes
 router.post('/get-purchase-orders', purchaseOrderController.getPurchaseOrders);

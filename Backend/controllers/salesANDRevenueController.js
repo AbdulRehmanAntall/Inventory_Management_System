@@ -116,3 +116,36 @@ exports.getTotalTaxCollected = async (req, res) => {
         res.status(500).json({ message: 'Error calculating tax', error: err.message });
     }
 };
+
+
+//function to get all sales
+exports.showAllSales = async (req, res) => {
+    try {
+        const pool = await poolPromise; // Get the database pool
+        const request = pool.request(); // Create a request from the pool
+
+        // Execute the stored procedure Get_All_Sales
+        const result = await request.execute('Get_All_Sales'); 
+
+        // Check if there are sales records
+        if (result.recordset.length > 0) {
+            res.status(200).json({
+                success: true,
+                sales: result.recordset
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: 'No sales found'
+            });
+        }
+    } catch (error) {
+        // Log the error and send a 500 response
+        console.error("❌ Error fetching sales:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message
+        });
+    }
+};

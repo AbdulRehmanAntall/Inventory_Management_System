@@ -140,3 +140,94 @@
         transform: translateY(-10px);
     }
 }
+
+/* Sales Table */
+.sales-table {
+    background: #2A2D32;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    margin-top: 30px; /* Add spacing below the form */
+}
+
+.sales-table h2 {
+    margin-bottom: 18px;
+    font-size: 22px;
+    color: #fff;
+    border-bottom: 1px solid #3c3f45;
+    padding-bottom: 10px;
+}
+
+.sales-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.sales-table th,
+.sales-table td {
+    padding: 14px 150px;
+    border: 1px solid #3c3f45;
+    text-align: center;
+    color: #f1f1f1;
+    white-space: nowrap; 
+}
+
+.sales-table th {
+    background-color: #1C1E22;
+    color: #ffffff;
+}
+
+/* Action Buttons in Sales Table */
+.sales-table button {
+    background-color: #e53e3e;
+    color: #fff;
+    border: none;
+    padding: 8px 80px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 10px; /* Space between buttons */
+}
+
+.sales-table button:hover {
+    background-color: #c53030;
+}
+
+.sales-table button:last-child {
+    margin-right: 0; /* No margin on the last button */
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #fff;
+    border-top: 3px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 8px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Search Input */
+.search-input {
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    width: 100%;
+    border: 1px solid #3c3f45;
+    border-radius: 8px;
+    background-color: #202226;
+    color: #f1f1f1;
+    outline: none;
+    font-size: 16px;
+}
+
+.search-input::placeholder {
+    color: #888;
+}
