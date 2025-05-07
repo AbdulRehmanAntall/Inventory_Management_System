@@ -21,9 +21,7 @@ const Sales = () => {
     const navigate = useNavigate();
 
     const handleNavigation = (path) => navigate(path);
-    const handleLogout = () => {
-        navigate('/login');
-    };
+    const handleLogout = () => navigate('/login');
 
     useEffect(() => {
         axios.get('http://localhost:5000/api/show-all-customers')
@@ -59,9 +57,9 @@ const Sales = () => {
         } else if (field === 'Quantity') {
             const selectedProduct = products.find(p => p.ProductID === parseInt(updatedItems[index]['ProductID']));
             const availableStock = selectedProduct ? selectedProduct.ProductStockQuantity : 0;
-            updatedItems[index]['Quantity'] = Math.min(value, availableStock);
+            updatedItems[index]['Quantity'] = Math.min(parseFloat(value), availableStock);
         } else {
-            updatedItems[index][field] = value;
+            updatedItems[index][field] = parseFloat(value);
         }
 
         setSaleItems(updatedItems);
@@ -70,21 +68,28 @@ const Sales = () => {
 
     const handleSaleChange = (e) => {
         const { name, value } = e.target;
-        const updatedSale = { ...newSale, [name]: value };
+        const numericValue = name === 'InvoiceTax' ? parseFloat(value) : value;
+        const updatedSale = { ...newSale, [name]: numericValue };
         setNewSale(updatedSale);
-        calculateTotals(saleItems, name === 'InvoiceTax' ? value : updatedSale.InvoiceTax);
+        const taxPercent = name === 'InvoiceTax' ? parseFloat(value) : parseFloat(updatedSale.InvoiceTax);
+        calculateTotals(saleItems, taxPercent);
     };
 
     const calculateTotals = (items, taxPercent) => {
-        const total = items.reduce((acc, item) =>
-            acc + (item.Quantity * item.PricePerUnit - item.Discount), 0);
-        const taxAmount = total * (taxPercent / 100);
+        const total = items.reduce((acc, item) => {
+            const qty = parseFloat(item.Quantity) || 0;
+            const price = parseFloat(item.PricePerUnit) || 0;
+            const discount = parseFloat(item.Discount) || 0;
+            return acc + (qty * price - discount);
+        }, 0);
+
+        const taxAmount = total * (parseFloat(taxPercent) / 100);
         const finalAmount = total + taxAmount;
 
         setNewSale(prev => ({
             ...prev,
-            InvoiceTotalAmount: total.toFixed(2),
-            FinalAmount: finalAmount.toFixed(2)
+            InvoiceTotalAmount: total,
+            FinalAmount: finalAmount
         }));
     };
 
@@ -109,7 +114,7 @@ const Sales = () => {
                 const emailData = {
                     customerEmail: selectedCustomer.CustomerEmail,
                     customerName: selectedCustomer.CustomerName,
-                    finalAmount: newSale.FinalAmount,
+                    finalAmount: newSale.FinalAmount.toFixed(2),
                     items: itemsForEmail
                 };
 
@@ -240,8 +245,8 @@ const Sales = () => {
                         </div>
 
                         <div className="totals">
-                            <p>Total: {newSale.InvoiceTotalAmount}</p>
-                            <p>Final Amount: {newSale.FinalAmount}</p>
+                            <p>Total: {newSale.InvoiceTotalAmount.toFixed(2)}</p>
+                            <p>Final Amount: {newSale.FinalAmount.toFixed(2)}</p>
                         </div>
 
                         <button type="submit" className="submit-btn">Submit Sale</button>
@@ -254,8 +259,9 @@ const Sales = () => {
                         <tr>
                             <th>Sale ID</th>
                             <th>Customer</th>
-                            <th>Tax</th>
                             <th>Total Amount</th>
+                            <th>Tax</th>
+                            <th>Final Amount</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -263,8 +269,9 @@ const Sales = () => {
                             <tr key={sale.SaleID}>
                                 <td>{sale.SaleID}</td>
                                 <td>{sale.CustomerName}</td>
-                                <td>{sale.InvoiceTax}%</td>
                                 <td>{sale.InvoiceTotalAmount}</td>
+                                <td>{sale.InvoiceTax}%</td>
+                                <td>{(sale.InvoiceTotalAmount + (sale.InvoiceTotalAmount * sale.InvoiceTax / 100)).toFixed(2)}</td>
                             </tr>
                         ))}
                     </tbody>
