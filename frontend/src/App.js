@@ -16,6 +16,8 @@ import Orders from './pages/orders';
 import Sales from './pages/sales';
 import Reports from './pages/reports';
 import Returns from './pages/returns';
+import ChatBot from './pages/chatbot';
+
 
 function App() {
   return (
@@ -36,6 +38,8 @@ function App() {
           <Route path="/sales" element={<Sales />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/returns" element={<Returns />} />
+          <Route path="/chatbot" element={<ChatBot />} />
+
 
 
 

@@ -26,7 +26,7 @@ exports.sendSaleEmail = async (req, res) => {
         from: process.env.EMAIL_USER,
         to: customerEmail,
         subject: '🛒 Thank You for Your Purchase at StockSync!',
-        text: `Dear ${customerName},\n\nThank you for your recent purchase at StockSync. Here are your sale details:\n\n${itemList}\n\nTotal Paid: ${finalAmount}\n\nWe appreciate your business.\n\n— StockSync Team`
+        text: `Dear ${customerName},\n\nPlease find attached the sales invoice for your recent purchase with StockSync: \n\n${itemList}\n\nTotal Paid: PKR ${finalAmount}\n\nWe truly appreciate your business and look forward to serve you again.\n\nRegards,\nStockSync Team`
     };
 
     try {

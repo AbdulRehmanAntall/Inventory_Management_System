@@ -91,8 +91,7 @@ function Dashboard() {
                         <li onClick={() => handleNavigation('/users')}>User Management</li>
                         <hr className="menu-separator" />
                         <li onClick={() => handleNavigation('/chatbot')}>AI ChatBot</li>
-                        <hr className="menu-separator" />
-                        <li onClick={() => handleNavigation('/settings')}>Settings</li>
+                      
                     </ul>
                 </div>
                 <div className="logout-section">
