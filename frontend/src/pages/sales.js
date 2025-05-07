@@ -11,7 +11,7 @@ const Sales = () => {
     const [newSale, setNewSale] = useState({
         SaleUserID: 1,
         CustomerID: '',
-        InvoiceTax: 0, // as percentage, e.g. 18 for 18%
+        InvoiceTax: 0,
         InvoiceTotalAmount: 0,
         FinalAmount: 0
     });
@@ -22,7 +22,6 @@ const Sales = () => {
 
     const handleNavigation = (path) => navigate(path);
     const handleLogout = () => {
-        // Add logout functionality if needed
         navigate('/login');
     };
 
@@ -31,8 +30,6 @@ const Sales = () => {
             .then(res => setCustomers(res.data.customers));
         axios.get('http://localhost:5000/api/get-all-products')
             .then(res => setProducts(res.data.products));
-        
-        // Fetch all sales
         axios.get('http://localhost:5000/api/all-sales')
             .then(res => setAllSales(res.data.sales));
     }, []);
@@ -50,19 +47,16 @@ const Sales = () => {
     const handleItemChange = (index, field, value) => {
         const updatedItems = [...saleItems];
 
-        // If changing ProductID, auto-set PricePerUnit and set max quantity to ProductStockQuantity
         if (field === 'ProductID') {
             const selectedProduct = products.find(p => p.ProductID === parseInt(value));
             updatedItems[index]['ProductID'] = value;
             updatedItems[index]['PricePerUnit'] = selectedProduct ? selectedProduct.ProductPrice : 0;
-            updatedItems[index]['Quantity'] = 1; // Reset quantity to 1 when product is changed
+            updatedItems[index]['Quantity'] = 1;
         } else if (field === 'Discount') {
-            // Prevent discount greater than price
             const price = parseFloat(updatedItems[index]['PricePerUnit']) || 0;
             value = Math.min(parseFloat(value), price);
             updatedItems[index][field] = value;
         } else if (field === 'Quantity') {
-            // Ensure quantity is not greater than available stock
             const selectedProduct = products.find(p => p.ProductID === parseInt(updatedItems[index]['ProductID']));
             const availableStock = selectedProduct ? selectedProduct.ProductStockQuantity : 0;
             updatedItems[index]['Quantity'] = Math.min(value, availableStock);
@@ -102,9 +96,28 @@ const Sales = () => {
         })
             .then(() => {
                 setNotification('Sale Recorded Successfully!');
+                const selectedCustomer = customers.find(c => c.CustomerID === parseInt(newSale.CustomerID));
+                const itemsForEmail = saleItems.map(item => {
+                    const product = products.find(p => p.ProductID === parseInt(item.ProductID));
+                    return {
+                        ProductName: product?.ProductName || 'Unknown',
+                        Quantity: item.Quantity,
+                        PricePerUnit: item.PricePerUnit
+                    };
+                });
+
+                const emailData = {
+                    customerEmail: selectedCustomer.CustomerEmail,
+                    customerName: selectedCustomer.CustomerName,
+                    finalAmount: newSale.FinalAmount,
+                    items: itemsForEmail
+                };
+
+                axios.post('http://localhost:5000/api/send-sale-email', emailData);
+
                 setSaleItems([]);
                 setNewSale({ SaleUserID: 1, CustomerID: '', InvoiceTax: 0, InvoiceTotalAmount: 0, FinalAmount: 0 });
-                // Fetch all sales after recording a new sale
+
                 axios.get('http://localhost:5000/api/all-sales')
                     .then(res => setAllSales(res.data.sales));
             })
@@ -243,7 +256,6 @@ const Sales = () => {
                             <th>Customer</th>
                             <th>Tax</th>
                             <th>Total Amount</th>
-                            
                         </tr>
                     </thead>
                     <tbody>

@@ -10,7 +10,9 @@ const reorderANDexpiryController = require('../controllers/reorder&expiryControl
 const reportingController = require('../controllers/reportingController');
 const salesANDRevenueController = require('../controllers/salesANDRevenueController');
 const purchaseOrderController = require('../controllers/purchaseOrderController');
+const emailController = require('../controllers/emailController');
 
+router.post('/send-sale-email', emailController.sendSaleEmail);
 //user Routes
 router.post('/login', userController.authenticateUser);
 router.post('/insert-user', userController.insertNewUser);
