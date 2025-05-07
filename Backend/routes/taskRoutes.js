@@ -70,6 +70,8 @@ router.post('/total-revenue', salesANDRevenueController.getTotalRevenue);
 router.get('/best-selling-products', salesANDRevenueController.getBestSellingProducts);
 router.post('/total-tax', salesANDRevenueController.getTotalTaxCollected);
 router.get('/all-sales', salesANDRevenueController.showAllSales);
+router.post('/return-sale-item', salesANDRevenueController.returnSaleItem);
+router.post('/get-products-in-sale', salesANDRevenueController.getProductsInSale);
 
 //purchase order routes
 router.post('/get-purchase-orders', purchaseOrderController.getPurchaseOrders);

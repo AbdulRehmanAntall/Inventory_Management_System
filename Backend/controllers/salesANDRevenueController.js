@@ -149,3 +149,168 @@ exports.showAllSales = async (req, res) => {
         });
     }
 };
+
+
+// Function to process the return of a sale item
+exports.returnSaleItem = async (req, res) => {
+    const { SaleID, ProductID, ReturnQuantity } = req.body;
+
+    try {
+        const pool = await poolPromise;
+        
+        // Declare variables for sale item information
+        let pricePerUnit, soldQuantity, saleItemID, newQuantity, newSubtotal, newInvoiceTotal;
+
+        // Find the sale item details
+        const result = await pool.request()
+            .input('SaleID', sql.Int, SaleID)
+            .input('ProductID', sql.Int, ProductID)
+            .query(`
+                SELECT TOP 1 
+                    SaleItemID, 
+                    SaleItemPricePerUnit, 
+                    SaleItemQuantity 
+                FROM SaleItems
+                WHERE SaleItemSaleID = @SaleID AND SaleItemProductID = @ProductID;
+            `);
+
+        // If the sale item doesn't exist, return an error
+        if (result.recordset.length === 0) {
+            return res.status(404).json({ message: 'Sale item not found for the given SaleID and ProductID' });
+        }
+
+        // Get sale item details
+        saleItemID = result.recordset[0].SaleItemID;
+        pricePerUnit = result.recordset[0].SaleItemPricePerUnit;
+        soldQuantity = result.recordset[0].SaleItemQuantity;
+
+        // Validate the return quantity
+        if (ReturnQuantity > soldQuantity) {
+            return res.status(400).json({ message: 'Return quantity exceeds the quantity sold.' });
+        }
+
+        // Calculate the new quantity and subtotal
+        newQuantity = soldQuantity - ReturnQuantity;
+        newSubtotal = newQuantity * pricePerUnit;
+
+        // Update the sale item in the database
+        await pool.request()
+            .input('SaleItemID', sql.Int, saleItemID)
+            .input('NewQuantity', sql.Int, newQuantity)
+            .input('NewSubtotal', sql.Decimal(10, 2), newSubtotal)
+            .query(`
+                UPDATE SaleItems
+                SET 
+                    SaleItemQuantity = @NewQuantity,
+                    SaleItemSubtotal = @NewSubtotal
+                WHERE SaleItemID = @SaleItemID;
+            `);
+
+        // Restock the product
+        await pool.request()
+            .input('ProductID', sql.Int, ProductID)
+            .input('ReturnQuantity', sql.Int, ReturnQuantity)
+            .query(`
+                UPDATE Products
+                SET ProductStockQuantity = ProductStockQuantity + @ReturnQuantity
+                WHERE ProductID = @ProductID;
+            `);
+
+        // Recalculate the invoice total
+        const totalResult = await pool.request()
+            .input('SaleID', sql.Int, SaleID)
+            .query(`
+                SELECT SUM(SaleItemSubtotal) AS NewInvoiceTotal
+                FROM SaleItems
+                WHERE SaleItemSaleID = @SaleID;
+            `);
+
+        newInvoiceTotal = totalResult.recordset[0].NewInvoiceTotal;
+
+        // Update the invoice total
+        await pool.request()
+            .input('SaleID', sql.Int, SaleID)
+            .input('NewInvoiceTotal', sql.Decimal(10, 2), newInvoiceTotal)
+            .query(`
+                UPDATE SaleInvoices
+                SET InvoiceTotalAmount = @NewInvoiceTotal
+                WHERE SaleID = @SaleID;
+            `);
+
+        // Fetch products sold in this sale
+        const productsResult = await pool.request()
+            .input('SaleID', sql.Int, SaleID)
+            .query(`
+                SELECT 
+                    P.ProductID,
+                    P.ProductName,
+                    SI.SaleItemQuantity,
+                    SI.SaleItemPricePerUnit,
+                    SI.SaleItemSubtotal
+                FROM SaleItems SI
+                INNER JOIN Products P ON SI.SaleItemProductID = P.ProductID
+                WHERE SI.SaleItemSaleID = @SaleID AND SI.SaleItemQuantity > 0;
+            `);
+
+        // Send the response with the products sold in this sale
+        res.status(200).json({
+            message: 'Return processed successfully',
+            newInvoiceTotal,
+            products: productsResult.recordset  // This is the list of products sold in the sale
+        });
+
+    } catch (err) {
+        console.error('Error processing product return:', err);
+        res.status(500).json({
+            message: 'Error processing return',
+            error: err.message
+        });
+    }
+};
+
+// Function to get products in a specific sale
+exports.getProductsInSale = async (req, res) => {
+    const { SaleID } = req.body;
+
+    try {
+        const pool = await poolPromise;
+
+        // Query to get the products sold in the sale
+        const result = await pool.request()
+            .input('SaleID', sql.Int, SaleID)
+            .query(`
+                SELECT 
+                    P.ProductID,
+                    P.ProductName,
+                    SI.SaleItemQuantity,
+                    SI.SaleItemPricePerUnit,
+                    SI.SaleItemSubtotal
+                FROM SaleItems SI
+                INNER JOIN Products P ON SI.SaleItemProductID = P.ProductID
+                WHERE SI.SaleItemSaleID = @SaleID;
+            `);
+
+        // Check if products are found for the given sale ID
+        if (result.recordset.length > 0) {
+            res.status(200).json({
+                success: true,
+                products: result.recordset
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: 'No products found for this sale.'
+            });
+        }
+
+    } catch (err) {
+        // Log the error and send a 500 response
+        console.error('Error retrieving products in sale:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Error retrieving products in sale.',
+            error: err.message
+        });
+    }
+};
+
