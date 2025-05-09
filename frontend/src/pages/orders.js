@@ -16,7 +16,6 @@ const Orders = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    // Fetch all suppliers and orders
     const fetchData = useCallback(async () => {
         try {
             const [suppliersRes, ordersRes] = await Promise.all([
@@ -29,24 +28,19 @@ const Orders = () => {
             console.error('Error fetching data:', error);
             showNotification('Failed to load data.', 'error');
         }
-    }, []); // No dependencies here, so fetchData is memoized
+    }, []);
 
     useEffect(() => {
         fetchData();
-    }, [fetchData]); // Add fetchData as a dependency
+    }, [fetchData]);
 
     const handleNavigation = (path) => navigate(path);
-    const handleLogout = () => {
-        // Add logout functionality if needed
-        navigate('/login');
-    };
+    const handleLogout = () => navigate('/login');
 
-    // Handle new order form input change
     const handleChange = (e) => {
         setNewOrder({ ...newOrder, [e.target.name]: e.target.value });
     };
 
-    // Show notifications
     const showNotification = (message, type) => {
         setNotification({ message, type });
         setTimeout(() => {
@@ -54,24 +48,35 @@ const Orders = () => {
         }, 3000);
     };
 
-    // Handle adding a new order
     const handleAddOrder = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
             await axios.post('http://localhost:5000/api/insert-order', newOrder);
-            fetchData(); // Refetch orders after adding a new one
+
+            // Get supplier details for the selected supplier
+            const selectedSupplier = suppliers.find(s => s.SupplierID === parseInt(newOrder.OrderSupplierID));
+            if (selectedSupplier) {
+                const emailPayload = {
+                    supplierEmail: selectedSupplier.SupplierEmail,
+                    supplierName: selectedSupplier.SupplierName,
+                    Description: `The order total is $${newOrder.OrderTotalCost}. Please ensure all items are packed carefully and delivered as per our agreed terms.`
+                };
+
+                await axios.post('http://localhost:5000/api/send-order-email', emailPayload);
+            }
+
+            fetchData();
             setNewOrder({ OrderSupplierID: '', OrderStatus: 'pending', OrderTotalCost: '' });
-            showNotification('Order added successfully!', 'success');
+            showNotification('Order added and email sent successfully!', 'success');
         } catch (error) {
             console.error('Error adding order:', error);
-            showNotification('Failed to add order!', 'error');
+            showNotification('Failed to add order or send email!', 'error');
         } finally {
             setLoading(false);
         }
     };
 
-    // Handle updating order status
     const handleUpdateStatus = async (orderID, newStatus) => {
         setLoading(true);
         try {
@@ -89,7 +94,6 @@ const Orders = () => {
         }
     };
 
-    // Handle deleting an order
     const handleDeleteOrder = async (orderID) => {
         setLoading(true);
         try {
@@ -131,7 +135,6 @@ const Orders = () => {
                         <li onClick={() => handleNavigation('/users')}>User Management</li>
                         <hr className="menu-separator" />
                         <li onClick={() => handleNavigation('/chatbot')}>AI ChatBot</li>
-
                     </ul>
                 </div>
                 <div className="logout-section">

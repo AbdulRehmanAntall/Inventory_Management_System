@@ -13,6 +13,8 @@ const purchaseOrderController = require('../controllers/purchaseOrderController'
 const emailController = require('../controllers/emailController');
 
 router.post('/send-sale-email', emailController.sendSaleEmail);
+router.post('/send-order-email', emailController.sendOrderEmail);
+
 //user Routes
 router.post('/login', userController.authenticateUser);
 router.post('/insert-user', userController.insertNewUser);

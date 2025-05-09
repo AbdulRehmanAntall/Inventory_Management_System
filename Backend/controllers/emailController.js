@@ -38,3 +38,38 @@ exports.sendSaleEmail = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to send email', error: error.message });
     }
 };
+
+
+exports.sendOrderEmail = async (req, res) => {
+    const { supplierEmail, supplierName, Description } = req.body;
+
+    console.log("📧 Sending order email to:", supplierEmail);
+
+    if (!supplierEmail || !supplierName || !Description) {
+        return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+    });
+
+    const mailOptions = {
+        from: `"StockSync Team" <${process.env.EMAIL_USER}>`,
+        to: supplierEmail,
+        subject: 'New Order Request',
+        text: `Dear ${supplierName},\n\nI hope you are doing well. I am writing to formally place an order based on our ongoing business relationship. We appreciate your prompt service and look forward to another smooth transaction.\n\n${Description}\n\nWe would appreciate a confirmation of the order along with an estimated delivery schedule and invoice details. Thank you for your continued cooperation and timely support.\n\nRegards,\nStockSync Team`,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log("✅ Email sent successfully to", supplierEmail);
+        res.status(200).json({ success: true, message: 'Email sent successfully' });
+    } catch (error) {
+        console.error("❌ Failed to send email:", error);
+        res.status(500).json({ success: false, message: 'Failed to send email', error: error.message });
+    }
+};
