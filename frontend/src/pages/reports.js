@@ -217,18 +217,6 @@ const Reports = () => {
             <div className="main-content">
                 <h1 className="page-title">Reports Dashboard</h1>
 
-                {/* Select Report Period Section */}
-                <div className="report-section">
-                    <h2>Select Report Period</h2>
-                    <div className="report-period-container">
-                        <select value={period} onChange={(e) => setPeriod(e.target.value)}>
-                            <option value="daily">Daily</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="yearly">Yearly</option>
-                        </select>
-                        <button onClick={fetchSalesTrends}>Apply</button>
-                    </div>
-                </div>
 
                 {/* Summary Section */}
                 <div className="report-section">
@@ -273,6 +261,20 @@ const Reports = () => {
                         </table>
                     ) : <p>No data available.</p>}
                 </div>
+
+                {/* Select Report Period Section */}
+                <div className="report-section">
+                    <h2>Select Report Period</h2>
+                    <div className="report-period-container">
+                        <select value={period} onChange={(e) => setPeriod(e.target.value)}>
+                            <option value="daily">Daily</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                        <button onClick={fetchSalesTrends}>Apply</button>
+                    </div>
+                </div>
+
 
                 {/* Sales Trends Chart Section */}
                 <div className="report-section">

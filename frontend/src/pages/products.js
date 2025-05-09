@@ -7,6 +7,7 @@ import '../styles/products.css';
 const Products = () => {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [orders, setOrders] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [newProduct, setNewProduct] = useState({
@@ -16,7 +17,8 @@ const Products = () => {
         ProductPrice: '',
         ProductStockQuantity: '',
         ProductReorderThreshold: 5,
-        ProductExpiryDate: ''
+        ProductExpiryDate: '',
+        ProductOrderId: ''
     });
     const [editingPrice, setEditingPrice] = useState({});
     const [notification, setNotification] = useState(null);
@@ -24,24 +26,21 @@ const Products = () => {
 
     const navigate = useNavigate();
 
-    const handleNavigation = (path) => navigate(path);
-    const handleLogout = () => {
-        // Add logout functionality if needed
-        navigate('/login');
-    };
-
-    // Fetch products and categories
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchData = async () => {
             try {
-                const [productsRes, categoriesRes] = await Promise.all([
+                const [productsRes, categoriesRes, ordersRes] = await Promise.all([
                     axios.get('http://localhost:5000/api/get-all-products'),
-                    axios.get('http://localhost:5000/api/categories')
+                    axios.get('http://localhost:5000/api/categories'),
+                    axios.get('http://localhost:5000/api/show-all-orders')
                 ]);
                 const productsData = productsRes.data?.products || [];
                 const categoriesData = categoriesRes.data?.data || [];
+                const ordersData = ordersRes.data?.orders || [];
+
                 setProducts(productsData);
                 setCategories(categoriesData);
+                setOrders(ordersData);
                 setFilteredProducts(productsData);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -49,31 +48,31 @@ const Products = () => {
             }
         };
 
-        fetchProducts();
-    }, []);  // Empty dependency array ensures this runs only once
+        fetchData();
+    }, []);
 
-    // Notification display
     const showNotification = (message, type) => {
         setNotification({ message, type });
         setTimeout(() => setNotification(null), 3000);
     };
 
-    // Handle form input changes
+    const handleNavigation = (path) => navigate(path);
+    const handleLogout = () => navigate('/login');
+
     const handleChange = (e) => {
         setNewProduct({ ...newProduct, [e.target.name]: e.target.value });
     };
 
-    // Add new product
     const handleAddProduct = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:5000/api/insert-product', newProduct);
-            const addedProduct = res.data?.product;
+            const response = await axios.post('http://localhost:5000/api/insert-product', newProduct);
+            const addedProduct = response.data?.product || response.data?.newProduct;
             if (addedProduct) {
-                const updatedProducts = [...products, addedProduct];
-                setProducts(updatedProducts);
-                setFilteredProducts(updatedProducts);
+                const updatedList = [...products, addedProduct];
+                setProducts(updatedList);
+                setFilteredProducts(updatedList);
                 setNewProduct({
                     ProductName: '',
                     ProductDescription: '',
@@ -81,8 +80,11 @@ const Products = () => {
                     ProductPrice: '',
                     ProductStockQuantity: '',
                     ProductReorderThreshold: 5,
-                    ProductExpiryDate: ''
+                    ProductExpiryDate: '',
+                    ProductOrderId: ''
                 });
+                showNotification('Product added successfully!', 'success');
+            } else {
                 showNotification('Product added successfully!', 'success');
             }
         } catch (error) {
@@ -93,7 +95,6 @@ const Products = () => {
         }
     };
 
-    // Search filtering
     const handleSearchChange = (e) => {
         const term = e.target.value;
         setSearchTerm(term);
@@ -103,7 +104,6 @@ const Products = () => {
         setFilteredProducts(filtered);
     };
 
-    // Update product price
     const handlePriceChange = (ProductID, value) => {
         setEditingPrice(prev => ({ ...prev, [ProductID]: value }));
     };
@@ -112,12 +112,15 @@ const Products = () => {
         const newPrice = editingPrice[ProductID];
         if (!newPrice) return;
         try {
-            await axios.post('http://localhost:5000/api/update-product-price', { ProductID, ProductPrice: newPrice });
-            const updatedProducts = products.map(p =>
+            await axios.post('http://localhost:5000/api/update-product-price', {
+                ProductID,
+                ProductPrice: newPrice
+            });
+            const updatedList = products.map(p =>
                 p.ProductID === ProductID ? { ...p, ProductPrice: newPrice } : p
             );
-            setProducts(updatedProducts);
-            setFilteredProducts(updatedProducts);
+            setProducts(updatedList);
+            setFilteredProducts(updatedList);
             showNotification('Product price updated successfully!', 'success');
         } catch (error) {
             console.error('Error updating price:', error);
@@ -125,13 +128,12 @@ const Products = () => {
         }
     };
 
-    // Delete product
     const deleteProduct = async (ProductID) => {
         try {
             await axios.post('http://localhost:5000/api/delete-product', { ProductID });
-            const updatedProducts = products.filter(p => p.ProductID !== ProductID);
-            setProducts(updatedProducts);
-            setFilteredProducts(updatedProducts);
+            const updatedList = products.filter(p => p.ProductID !== ProductID);
+            setProducts(updatedList);
+            setFilteredProducts(updatedList);
             showNotification('Product deleted successfully!', 'success');
         } catch (error) {
             console.error('Error deleting product:', error);
@@ -183,7 +185,6 @@ const Products = () => {
                     </div>
                 )}
 
-                {/* Add Product Form */}
                 <form className="add-product-form" onSubmit={handleAddProduct}>
                     <h2>Add New Product</h2>
                     <input type="text" name="ProductName" placeholder="Product Name" value={newProduct.ProductName} onChange={handleChange} required />
@@ -194,19 +195,25 @@ const Products = () => {
                             <option key={c.categoryid} value={c.categoryid}>{c.categoryname}</option>
                         ))}
                     </select>
-                    <input type="number" name="ProductPrice" placeholder="Price" value={newProduct.ProductPrice} onChange={handleChange} required min="0" step="0.01" />
-                    <input type="number" name="ProductStockQuantity" placeholder="Stock Quantity" value={newProduct.ProductStockQuantity} onChange={handleChange} required min="0" />
-                    <input type="number" name="ProductReorderThreshold" placeholder="Reorder Threshold" value={newProduct.ProductReorderThreshold} onChange={handleChange} min="0" />
+                    <select name="ProductOrderId" value={newProduct.ProductOrderId} onChange={handleChange} required>
+                        <option value="">Select Order</option>
+                        {orders.map(o => (
+                            <option key={o.OrderID} value={o.OrderID}>{o.OrderID}</option>
+                        ))}
+                    </select>
+                    <input type="number" name="ProductPrice" placeholder="Price" value={newProduct.ProductPrice} onChange={handleChange} required />
+                    <input type="number" name="ProductStockQuantity" placeholder="Stock Quantity" value={newProduct.ProductStockQuantity} onChange={handleChange} required />
+                    <input type="number" name="ProductReorderThreshold" placeholder="Reorder Threshold" value={newProduct.ProductReorderThreshold} onChange={handleChange} />
                     <input type="date" name="ProductExpiryDate" value={newProduct.ProductExpiryDate} onChange={handleChange} />
-                    <button type="submit" disabled={loading}>{loading ? <span className="loading-spinner"></span> : 'Add Product'}</button>
+                    <button type="submit" disabled={loading}>
+                        {loading ? <span className="loading-spinner"></span> : 'Add Product'}
+                    </button>
                 </form>
 
-                {/* Search */}
                 <div className="search-input">
                     <input type="text" placeholder="Search Products" value={searchTerm} onChange={handleSearchChange} />
                 </div>
 
-                {/* Product Table */}
                 <div className="product-table">
                     <h2>Products List</h2>
                     <table>
@@ -216,7 +223,7 @@ const Products = () => {
                                 <th>Name</th>
                                 <th>Description</th>
                                 <th>Category</th>
-                                <th>Price ($)</th>
+                                <th>Price</th>
                                 <th>Stock</th>
                                 <th>Reorder</th>
                                 <th>Expiry</th>
@@ -226,32 +233,29 @@ const Products = () => {
                         <tbody>
                             {filteredProducts.length > 0 ? (
                                 filteredProducts.map(p => (
-                                    p.ProductID ? (  // Check if ProductID exists before rendering
-                                        <tr key={p.ProductID}>
-                                            <td>{p.ProductID}</td>
-                                            <td>{p.ProductName}</td>
-                                            <td>{p.ProductDescription}</td>
-                                            <td>{p.ProductCategoryID}</td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    value={editingPrice[p.ProductID] !== undefined ? editingPrice[p.ProductID] : p.ProductPrice}
-                                                    onChange={(e) => handlePriceChange(p.ProductID, e.target.value)}
-                                                    style={{ width: '70px' }}
-                                                />
-                                            </td>
-                                            <td>{p.ProductStockQuantity}</td>
-                                            <td>{p.ProductReorderThreshold}</td>
-                                            <td>{p.ProductExpiryDate ? new Date(p.ProductExpiryDate).toLocaleDateString() : 'N/A'}</td>
-                                            <td>
-                                                <button onClick={() => updateProductPrice(p.ProductID)}>Update</button>
-                                                <button onClick={() => deleteProduct(p.ProductID)}>Delete</button>
-                                            </td>
-                                        </tr>
-                                    ) : null
+                                    <tr key={p.ProductID}>
+                                        <td>{p.ProductID}</td>
+                                        <td>{p.ProductName}</td>
+                                        <td>{p.ProductDescription}</td>
+                                        <td>{p.ProductCategoryID}</td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                value={editingPrice[p.ProductID] !== undefined ? editingPrice[p.ProductID] : p.ProductPrice}
+                                                onChange={(e) => handlePriceChange(p.ProductID, e.target.value)}
+                                            />
+                                        </td>
+                                        <td>{p.ProductStockQuantity}</td>
+                                        <td>{p.ProductReorderThreshold}</td>
+                                        <td>{p.ProductExpiryDate ? new Date(p.ProductExpiryDate).toLocaleDateString() : 'N/A'}</td>
+                                        <td>
+                                            <button onClick={() => updateProductPrice(p.ProductID)}>Update</button>
+                                            <button onClick={() => deleteProduct(p.ProductID)}>Delete</button>
+                                        </td>
+                                    </tr>
                                 ))
                             ) : (
-                                <tr><td colSpan="9" style={{ textAlign: 'center' }}>No Products Found</td></tr>
+                                <tr><td colSpan="9">No Products Found</td></tr>
                             )}
                         </tbody>
                     </table>

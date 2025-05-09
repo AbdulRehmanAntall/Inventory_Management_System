@@ -10,7 +10,8 @@ exports.insertNewProduct = async (req, res) => {
         ProductPrice,
         ProductStockQuantity,
         ProductReorderThreshold = 5,
-        ProductExpiryDate = null
+        ProductExpiryDate = null,
+        ProductOrderId
     } = req.body;
 
     console.log("Inserting New Product:", {
@@ -20,7 +21,8 @@ exports.insertNewProduct = async (req, res) => {
         ProductPrice,
         ProductStockQuantity,
         ProductReorderThreshold,
-        ProductExpiryDate
+        ProductExpiryDate,
+        ProductOrderId
     });
 
     try {
@@ -34,6 +36,8 @@ exports.insertNewProduct = async (req, res) => {
         request.input('ProductStockQuantity', sql.Int, ProductStockQuantity);
         request.input('ProductReorderThreshold', sql.Int, ProductReorderThreshold);
         request.input('ProductExpiryDate', sql.Date, ProductExpiryDate);
+        request.input('ProductOrderId', sql.Int, ProductOrderId);
+
         request.output('Success', sql.Int);
 
         const result = await request.execute('Insert_New_Product');
