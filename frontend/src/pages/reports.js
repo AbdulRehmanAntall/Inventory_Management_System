@@ -77,7 +77,6 @@ const Reports = () => {
         if (trends.length === 0) return { labels: [], data: [] };
 
         if (trends[0].Date) {
-            // Daily Data
             return {
                 labels: trends.map(t => new Date(t.Date).toLocaleDateString()),
                 data: trends.map(t => t.Total_Sales),
@@ -85,14 +84,12 @@ const Reports = () => {
         }
 
         if (trends[0].Month) {
-            // Monthly Data
             return {
                 labels: trends.map(t => `${t.Month}/${t.Year}`),
                 data: trends.map(t => t.Total_Sales),
             };
         }
 
-        // Yearly Data
         return {
             labels: trends.map(t => t.Year),
             data: trends.map(t => t.Total_Sales),
@@ -115,7 +112,6 @@ const Reports = () => {
         if (trends.length === 0) return <p>No sales trend data available.</p>;
 
         if (trends[0].Date) {
-            // Daily Data
             return (
                 <table>
                     <thead>
@@ -137,7 +133,6 @@ const Reports = () => {
         }
 
         if (trends[0].Month) {
-            // Monthly Data
             return (
                 <table>
                     <thead>
@@ -158,7 +153,6 @@ const Reports = () => {
             );
         }
 
-        // Yearly Data
         return (
             <table>
                 <thead>
@@ -217,8 +211,6 @@ const Reports = () => {
             <div className="main-content">
                 <h1 className="page-title">Reports Dashboard</h1>
 
-
-                {/* Summary Section */}
                 <div className="report-section">
                     <h2>Summary</h2>
                     <table>
@@ -239,7 +231,6 @@ const Reports = () => {
                     </table>
                 </div>
 
-                {/* Frequent Products Section */}
                 <div className="report-section">
                     <h2>Frequently Sold Products</h2>
                     {frequentProducts.length ? (
@@ -262,7 +253,6 @@ const Reports = () => {
                     ) : <p>No data available.</p>}
                 </div>
 
-                {/* Select Report Period Section */}
                 <div className="report-section">
                     <h2>Select Report Period</h2>
                     <div className="report-period-container">
@@ -275,8 +265,6 @@ const Reports = () => {
                     </div>
                 </div>
 
-
-                {/* Sales Trends Chart Section */}
                 <div className="report-section">
                     <h2>Sales Trends (Chart)</h2>
                     <div className="chart-container" style={{ height: '350px' }}>
@@ -284,13 +272,11 @@ const Reports = () => {
                     </div>
                 </div>
 
-                {/* Sales Trends Table Section */}
                 <div className="report-section">
                     <h2>Sales Trends (Table)</h2>
                     {renderTrendsTable()}
                 </div>
 
-                {/* Supplier Performance Section */}
                 <div className="report-section">
                     <h2>Top Performing Vendors</h2>
                     {suppliers.length ? (
@@ -305,9 +291,9 @@ const Reports = () => {
                             <tbody>
                                 {suppliers.map((s, i) => (
                                     <tr key={i}>
-                                        <td>{s.SupplierName}</td>
-                                        <td>{s.Total_Orders}</td>
-                                        <td>{s.Avg_Rating != null ? Number(s.Avg_Rating).toFixed(2) : 'N/A'}</td>
+                                        <td>{s.suppliername}</td>
+                                        <td>{s.total_orders}</td>
+                                        <td>{s.avg_rating != null ? Number(s.avg_rating).toFixed(2) : 'N/A'}</td>
                                     </tr>
                                 ))}
                             </tbody>
