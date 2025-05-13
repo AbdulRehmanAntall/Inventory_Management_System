@@ -21,6 +21,7 @@ const Products = () => {
         ProductOrderId: ''
     });
     const [editingPrice, setEditingPrice] = useState({});
+    const [editingStock, setEditingStock] = useState({});
     const [notification, setNotification] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -128,6 +129,31 @@ const Products = () => {
         }
     };
 
+    const handleStockChange = (ProductID, value) => {
+        if (value < 0) return; // Prevent negative stock values
+        setEditingStock(prev => ({ ...prev, [ProductID]: value }));
+    };
+
+    const updateProductStock = async (ProductID) => {
+        const newStock = editingStock[ProductID];
+        if (newStock === undefined || newStock < 0) return; // Don't update if stock is invalid
+        try {
+            await axios.post('http://localhost:5000/api/update-product-stock', {
+                ProductID,
+                NewStockQuantity: newStock
+            });
+            const updatedList = products.map(p =>
+                p.ProductID === ProductID ? { ...p, ProductStockQuantity: newStock } : p
+            );
+            setProducts(updatedList);
+            setFilteredProducts(updatedList);
+            showNotification('Product stock updated successfully!', 'success');
+        } catch (error) {
+            console.error('Error updating stock:', error);
+            showNotification('Failed to update stock.', 'error');
+        }
+    };
+
     const deleteProduct = async (ProductID) => {
         try {
             await axios.post('http://localhost:5000/api/delete-product', { ProductID });
@@ -138,6 +164,16 @@ const Products = () => {
         } catch (error) {
             console.error('Error deleting product:', error);
             showNotification('Failed to delete product.', 'error');
+        }
+    };
+
+    const handleAutoUpdateStock = async () => {
+        try {
+            await axios.get('http://localhost:5000/api/increment-low-stock');  // API to auto update low stock products
+            showNotification('Low stock products updated successfully!', 'success');
+        } catch (error) {
+            console.error('Error updating low stock products:', error);
+            showNotification('Failed to update low stock products.', 'error');
         }
     };
 
@@ -168,7 +204,6 @@ const Products = () => {
                         <li onClick={() => handleNavigation('/users')}>User Management</li>
                         <hr className="menu-separator" />
                         <li onClick={() => handleNavigation('/chatbot')}>AI ChatBot</li>
-
                     </ul>
                 </div>
                 <div className="logout-section">
@@ -245,11 +280,18 @@ const Products = () => {
                                                 onChange={(e) => handlePriceChange(p.ProductID, e.target.value)}
                                             />
                                         </td>
-                                        <td>{p.ProductStockQuantity}</td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                value={editingStock[p.ProductID] !== undefined ? editingStock[p.ProductID] : p.ProductStockQuantity}
+                                                onChange={(e) => handleStockChange(p.ProductID, e.target.value)}
+                                            />
+                                            <button onClick={() => updateProductStock(p.ProductID)}>Update Stock</button>
+                                        </td>
                                         <td>{p.ProductReorderThreshold}</td>
                                         <td>{p.ProductExpiryDate ? new Date(p.ProductExpiryDate).toLocaleDateString() : 'N/A'}</td>
                                         <td>
-                                            <button onClick={() => updateProductPrice(p.ProductID)}>Update</button>
+                                            <button onClick={() => updateProductPrice(p.ProductID)}>Update Price</button>
                                             <button onClick={() => deleteProduct(p.ProductID)}>Delete</button>
                                         </td>
                                     </tr>
@@ -259,6 +301,10 @@ const Products = () => {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                <div className="auto-update-stock">
+                    <button onClick={handleAutoUpdateStock}>Auto Update Stock</button>
                 </div>
             </div>
         </div>

@@ -49,6 +49,8 @@ router.post('/update-product-price', productController.updateProductPrice);
 router.post('/delete-product', productController.deleteProduct);
 router.post('/get-products-by-category', productController.getProductsByCategory);
 
+router.post('/update-product-stock', productController.updateProductStock);
+router.get('/increment-low-stock', productController.incrementLowStockProducts);
 //Order Routes
 router.post('/insert-order', orderController.insertNewOrder);
 router.post('/update-order-status', orderController.updateOrderStatus);

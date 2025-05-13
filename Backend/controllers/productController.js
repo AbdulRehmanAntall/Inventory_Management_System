@@ -176,3 +176,41 @@ exports.getProductsByCategory = async (req, res) => {
     }
 };
 
+// This function is used to update the stock quantity of a product
+exports.updateProductStock = async (req, res) => {
+    const { ProductID, NewStockQuantity } = req.body;
+
+    console.log("Updating Product Stock:", { ProductID, NewStockQuantity });
+
+    try {
+        const pool = await poolPromise;
+        const request = pool.request();
+
+        request.input('ProductID', sql.Int, ProductID);
+        request.input('NewStockQuantity', sql.Int, NewStockQuantity);
+
+        await request.execute('Update_Stock_Quantity');  // Stored procedure name
+
+        res.status(200).json({ success: true, message: '✅ Product stock updated successfully' });
+    } catch (error) {
+        console.error("❌ Error updating product stock:", error);
+        res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+    }
+};
+
+// This function is used to increment stock by 10 for products with stock < 5
+exports.incrementLowStockProducts = async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const request = pool.request();
+
+        await request.execute('Increment_Low_Stock_Products');  // Stored procedure name
+
+        res.status(200).json({ success: true, message: '✅ Low stock products updated successfully' });
+    } catch (error) {
+        console.error("❌ Error incrementing low stock products:", error);
+        res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+    }
+};
+
+
