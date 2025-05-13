@@ -8,7 +8,9 @@
     color: #f1f1f1;
 }
 
-.page-title, h1, h2 {
+.page-title,
+h1,
+h2 {
     color: #f1f1f1;
     font-weight: 600;
     margin-bottom: 20px;
@@ -160,6 +162,27 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.auto-update-stock button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.auto-update-stock button:hover {
+    background-color: darkred;
+    transform: scale(1.05);
 }
