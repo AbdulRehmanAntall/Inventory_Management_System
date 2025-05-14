@@ -65,8 +65,8 @@ exports.getTotalRevenue = async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request()
-            .input('startDate', sql.Date, startDate)  // Using DATE type here
-            .input('endDate', sql.Date, endDate)      // Using DATE type here
+            .input('startDate', sql.Date, startDate)
+            .input('endDate', sql.Date, endDate)
             .execute('get_total_revenue');
 
         const data = result.recordset[0];
@@ -101,7 +101,7 @@ exports.getTotalTaxCollected = async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request()
-            .input('startDate', sql.Date, startDate)  // Using DATE type here
+            .input('startDate', sql.Date, startDate)
             .input('endDate', sql.Date, endDate)
             .execute('get_total_tax_collected');
 
@@ -121,13 +121,13 @@ exports.getTotalTaxCollected = async (req, res) => {
 //function to get all sales
 exports.showAllSales = async (req, res) => {
     try {
-        const pool = await poolPromise; // Get the database pool
-        const request = pool.request(); // Create a request from the pool
+        const pool = await poolPromise;
+        const request = pool.request();
 
-        // Execute the stored procedure Get_All_Sales
-        const result = await request.execute('Get_All_Sales'); 
 
-        // Check if there are sales records
+        const result = await request.execute('Get_All_Sales');
+
+
         if (result.recordset.length > 0) {
             res.status(200).json({
                 success: true,
@@ -140,7 +140,7 @@ exports.showAllSales = async (req, res) => {
             });
         }
     } catch (error) {
-        // Log the error and send a 500 response
+
         console.error("❌ Error fetching sales:", error);
         res.status(500).json({
             success: false,
@@ -157,11 +157,9 @@ exports.returnSaleItem = async (req, res) => {
 
     try {
         const pool = await poolPromise;
-        
-        // Declare variables for sale item information
+
         let pricePerUnit, soldQuantity, saleItemID, newQuantity, newSubtotal, newInvoiceTotal;
 
-        // Find the sale item details
         const result = await pool.request()
             .input('SaleID', sql.Int, SaleID)
             .input('ProductID', sql.Int, ProductID)
@@ -174,7 +172,7 @@ exports.returnSaleItem = async (req, res) => {
                 WHERE SaleItemSaleID = @SaleID AND SaleItemProductID = @ProductID;
             `);
 
-        // If the sale item doesn't exist, return an error
+
         if (result.recordset.length === 0) {
             return res.status(404).json({ message: 'Sale item not found for the given SaleID and ProductID' });
         }
@@ -184,7 +182,7 @@ exports.returnSaleItem = async (req, res) => {
         pricePerUnit = result.recordset[0].SaleItemPricePerUnit;
         soldQuantity = result.recordset[0].SaleItemQuantity;
 
-        // Validate the return quantity
+
         if (ReturnQuantity > soldQuantity) {
             return res.status(400).json({ message: 'Return quantity exceeds the quantity sold.' });
         }
